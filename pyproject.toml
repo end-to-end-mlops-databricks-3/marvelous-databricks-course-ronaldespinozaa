@@ -21,7 +21,6 @@ dependencies = [
     "loguru==0.7.3",
     "marvelous@git+https://github.com/end-to-end-mlops-databricks-3/marvelous@0.1.0",
 ]
-
 dynamic = ['version']
 
 [project.optional-dependencies]
