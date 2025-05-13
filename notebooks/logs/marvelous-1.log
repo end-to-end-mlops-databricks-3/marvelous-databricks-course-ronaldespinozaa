@@ -1,0 +1,829 @@
+2025-05-12 16:17:29.397 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 16:17:29.403 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: y
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 16:17:33.373 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 16:17:50.143 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 16:17:50.150 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: y
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 16:17:54.728 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 16:20:35.983 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 16:20:35.987 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: y
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 16:20:41.516 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 16:48:54.330 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 16:48:54.333 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: y
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 16:48:59.485 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:05:32.133 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:05:32.137 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:08:03.096 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:08:03.097 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:08:06.646 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:09:38.122 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:09:38.127 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:09:43.539 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:14:42.006 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:14:42.009 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:14:44.830 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:16:18.343 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:16:18.343 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:16:29.064 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:16:29.066 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:16:31.524 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:16:42.686 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:16:42.688 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:16:44.924 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:19:55.599 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:19:55.601 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:19:58.186 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:20:06.270 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.0896 seconds
+2025-05-12 17:20:16.880 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-12 17:20:25.119 | INFO     | __main__:<module>:2 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 17:41:06.969 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:41:06.972 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:41:10.337 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:41:15.071 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.0519 seconds
+2025-05-12 17:41:20.414 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-12 17:41:34.330 | INFO     | __main__:<module>:2 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 17:42:29.094 | INFO     | __main__:<module>:8 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 17:43:55.354 | INFO     | __main__:<module>:5 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 17:49:13.808 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:49:13.812 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:49:17.146 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:53:07.991 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 17:53:07.994 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: bank_marketing
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 17:53:28.755 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 17:53:34.974 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.0579 seconds
+2025-05-12 17:53:48.989 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-12 17:57:35.728 | INFO     | __main__:<module>:6 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 18:04:10.471 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 18:04:10.471 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinozajr52@gmail.com
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 18:04:19.573 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 18:04:29.223 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.0527 seconds
+2025-05-12 18:04:50.019 | INFO     | __main__:<module>:6 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 18:06:10.774 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-12 18:06:15.546 | INFO     | __main__:<module>:6 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 18:07:47.031 | INFO     | __main__:<module>:6 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 18:08:35.389 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 18:08:35.394 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 18:08:37.627 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 18:08:45.525 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.0496 seconds
+2025-05-12 18:08:48.401 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-12 18:08:52.320 | INFO     | __main__:<module>:6 - 💾 Guardando train/test en Unity Catalog
+2025-05-12 18:09:19.016 | INFO     | __main__:<module>:12 - 🔁 Activando Change Data Feed
+2025-05-12 22:43:39.129 | INFO     | __main__:<module>:17 - ✅ Configuración cargada:
+2025-05-12 22:43:39.135 | INFO     | __main__:<module>:18 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-12 22:43:44.881 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-12 22:43:48.313 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.2169 seconds
+2025-05-12 22:43:53.470 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-12 22:43:56.241 | INFO     | __main__:<module>:4 - 💾 Guardando train/test en Unity Catalog
+2025-05-13 08:42:53.868 | INFO     | __main__:<module>:19 - ✅ Configuración cargada:
+2025-05-13 08:42:53.875 | INFO     | __main__:<module>:20 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-13 08:42:56.358 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-13 08:43:06.398 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.2046 seconds
+2025-05-13 08:43:08.230 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-13 08:43:13.875 | INFO     | __main__:<module>:4 - 💾 Guardando train/test en Unity Catalog
+2025-05-13 08:48:31.830 | INFO     | __main__:<module>:8 - 🔁 Activando Change Data Feed
+2025-05-13 10:20:09.866 | INFO     | __main__:<module>:19 - ✅ Configuración cargada:
+2025-05-13 10:20:09.870 | INFO     | __main__:<module>:20 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+__pydantic_private__: null
+
+2025-05-13 10:20:13.874 | INFO     | __main__:<module>:9 - 📥 Datos cargados desde: ../data/data.csv - Shape: (45211, 17)
+2025-05-13 10:20:30.242 | INFO     | __main__:<module>:5 - ⚙️ Preprocesamiento completado en: Elapsed time: 0.0615 seconds
+2025-05-13 10:20:36.019 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-13 10:20:44.626 | INFO     | __main__:<module>:4 - 💾 Guardando train/test en Unity Catalog
+2025-05-13 10:21:06.616 | INFO     | __main__:<module>:8 - 🔁 Activando Change Data Feed

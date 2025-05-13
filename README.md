@@ -20,7 +20,7 @@ Install task: https://taskfile.dev/installation/
 
 Update .env file with the following:
 ```
-GIT_TOKEN=<your github PAT>
+GITHUB_TOKEN=<your github PAT>
 ```
 
 To create a new environment and create a lockfile, run:
@@ -31,7 +31,7 @@ source .venv/bin/activate
 
 Or, alternatively:
 ```
-export GIT_TOKEN=<your github PAT>
+export GITHUB_TOKEN_TOKEN=<your github PAT>
 uv venv -p 3.11 .venv
 source .venv/bin/activate
 uv sync --extra dev

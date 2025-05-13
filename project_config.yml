@@ -1,0 +1,40 @@
+prd:
+  catalog_name: mlops_prd
+  schema_name: espinoza
+
+acc:
+  catalog_name: mlops_acc
+  schema_name: espinoza
+
+dev:
+  catalog_name: mlops_dev
+  schema_name: espinoza
+
+
+parameters:
+  learning_rate: 0.05
+  n_estimators: 200
+  max_depth: 4
+  random_state: 42
+
+num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+
+cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+
+target: Target
