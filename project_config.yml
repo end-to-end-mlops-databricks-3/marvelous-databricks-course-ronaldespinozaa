@@ -1,14 +1,17 @@
 prd:
   catalog_name: mlops_prd
   schema_name: espinoza
+  volume_name: bank_marketing_prd
 
 acc:
   catalog_name: mlops_acc
   schema_name: espinoza
+  volume_name: bank_marketing_acc
 
 dev:
   catalog_name: mlops_dev
   schema_name: espinoza
+  volume_name: bank_marketing_dev
 
 
 parameters:

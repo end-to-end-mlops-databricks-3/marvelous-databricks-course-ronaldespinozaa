@@ -16,6 +16,8 @@ import pandas as pd
 
 from bank_marketing.config import ProjectConfig
 from bank_marketing.data_processor import DataProcessor
+# NUEVO: Importación del VolumeManager
+from infrastructure.volume_manager import VolumeManager  
 from marvelous.logging import setup_logging
 from marvelous.timer import Timer
 
@@ -52,14 +54,47 @@ X_train, X_test = data_processor.split_data()
 logger.info(f"📊 Train shape: {X_train.shape} | Test shape: {X_test.shape}")
 
 # COMMAND ----------
-# Guardar en Unity Catalog
+# NUEVO: Creación y verificación del volumen
 
-# Guardar en Unity Catalog
+# Verificar que el volumen existe
+volume_manager = VolumeManager(spark, config)
+volume_manager.ensure_volume_exists()
 
-logger.info("💾 Guardando train/test en Unity Catalog")
-data_processor.save_to_catalog(X_train, X_test)
+logger.info(f"📦 Volumen configurado: {volume_manager.volume_path}")
 
-# Activar Change Data Feed
-logger.info("🔁 Activando Change Data Feed")
-data_processor.enable_change_data_feed()
+# COMMAND ----------
+# NUEVO: Guardar en Volumen
+
+logger.info("💾 Guardando datos en volumen (raw + processed)")
+with Timer() as volume_timer:
+    data_processor.save_to_volume(X_train, X_test)
+logger.info(f"⏱️ Datos guardados en volumen en: {volume_timer}")
+
+# COMMAND ----------
+# Guardar en Unity Catalog (mantenemos para compatibilidad)
+try:
+    logger.info("💾 Guardando train/test en Unity Catalog (raw + processed)")
+    data_processor.save_to_catalog(X_train, X_test)
+    
+    # Activar Change Data Feed para todas las tablas
+    if hasattr(data_processor, 'enable_change_data_feed'):
+        logger.info("🔁 Activando Change Data Feed para tablas")
+        data_processor.enable_change_data_feed()
+    else:
+        logger.warning("⚠️ Método enable_change_data_feed no encontrado")
+        
+    logger.info("✅ Datos disponibles tanto en formato raw como procesado")
+except Exception as e:
+    logger.warning(f"⚠️ No se pudo guardar en Unity Catalog: {e}")
+    logger.info("ℹ️ Los datos están disponibles en el volumen")
+
+# COMMAND ----------
+# NUEVO: Activar Change Data Feed para volúmenes (opcional)
+
+try:
+    logger.info("🔁 Activando Change Data Feed para volúmenes")
+    data_processor.enable_volume_change_data_feed()
+except Exception as e:
+    logger.warning(f"⚠️ No se pudo activar Change Data Feed para volúmenes: {e}")
+
 # COMMAND ----------
