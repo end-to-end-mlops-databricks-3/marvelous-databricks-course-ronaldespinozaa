@@ -89,7 +89,7 @@ except Exception as e:
     logger.info("ℹ️ Data is available in the volume")
 
 # COMMAND ----------
-# NEW: Enable Change Data Feed for volumes (optional)
+# Enable Change Data Feed for volumes (optional)
 
 try:
     logger.info("🔁 Enabling Change Data Feed for volumes")
