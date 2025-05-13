@@ -31,7 +31,7 @@ source .venv/bin/activate
 
 Or, alternatively:
 ```
-export GITHUB_TOKEN_TOKEN=<your github PAT>
+export GITHUB_TOKEN=<your github PAT>
 uv venv -p 3.11 .venv
 source .venv/bin/activate
 uv sync --extra dev
