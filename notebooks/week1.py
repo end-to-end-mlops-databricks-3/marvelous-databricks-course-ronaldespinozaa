@@ -7,7 +7,7 @@
 # sys.path.append(str(Path.cwd().parent / 'src'))
 
 # COMMAND ----------
-# Iniciar instalaciones 
+# Initialize installations
 
 from loguru import logger
 import yaml
@@ -16,22 +16,22 @@ import pandas as pd
 
 from bank_marketing.config import ProjectConfig
 from bank_marketing.data_processor import DataProcessor
-# NUEVO: Importación del VolumeManager
-from infrastructure.volume_manager import VolumeManager  
+# NEW: VolumeManager import
+from infrastructure.volume_manager import VolumeManager
 from marvelous.logging import setup_logging
 from marvelous.timer import Timer
 
-# Cargar configuración desde YAML
+# Load configuration from YAML
 config = ProjectConfig.from_yaml(config_path="../project_config.yml", env="dev")
 
-# Setup del logging
+# Setup logging
 setup_logging(log_file="logs/marvelous-1.log")
 
-logger.info("✅ Configuración cargada:")
+logger.info("✅ Configuration loaded:")
 logger.info(yaml.dump(config, default_flow_style=False))
 
 # COMMAND ----------
-# Iniciar Spark y cargar CSV desde Unity Catalog
+# Initialize Spark and load CSV from Unity Catalog
 spark = SparkSession.builder.getOrCreate()
 
 filepath = "../data/data.csv"
@@ -39,62 +39,79 @@ filepath = "../data/data.csv"
 # Load the data
 df = pd.read_csv(filepath)
 
-logger.info(f"📥 Datos cargados desde: {filepath} - Shape: {df.shape}")
+logger.info(f"📥 Data loaded from: {filepath} - Shape: {df.shape}")
 
 # COMMAND ----------
-# Preprocesamiento
+# Preprocessing
 with Timer() as preprocess_timer:
     data_processor = DataProcessor(df, config, spark)
     data_processor.preprocess()
-logger.info(f"⚙️ Preprocesamiento completado en: {preprocess_timer}")
+logger.info(f"⚙️ Preprocessing completed in: {preprocess_timer}")
 
 # COMMAND ----------
-# División train/test
+# Train/test split
 X_train, X_test = data_processor.split_data()
 logger.info(f"📊 Train shape: {X_train.shape} | Test shape: {X_test.shape}")
 
 # COMMAND ----------
-# NUEVO: Creación y verificación del volumen
+# NEW: Volume creation and verification
 
-# Verificar que el volumen existe
+# Verify that the volume exists
 volume_manager = VolumeManager(spark, config)
 volume_manager.ensure_volume_exists()
 
-logger.info(f"📦 Volumen configurado: {volume_manager.volume_path}")
+logger.info(f"📦 Volume configured: {volume_manager.volume_path}")
 
 # COMMAND ----------
-# NUEVO: Guardar en Volumen
+# NEW: Save to Volume
 
-logger.info("💾 Guardando datos en volumen (raw + processed)")
+logger.info("💾 Saving data to volume (raw + processed)")
 with Timer() as volume_timer:
     data_processor.save_to_volume(X_train, X_test)
-logger.info(f"⏱️ Datos guardados en volumen en: {volume_timer}")
+logger.info(f"⏱️ Data saved to volume in: {volume_timer}")
 
 # COMMAND ----------
-# Guardar en Unity Catalog (mantenemos para compatibilidad)
+# Save to Unity Catalog (maintained for compatibility)
 try:
-    logger.info("💾 Guardando train/test en Unity Catalog (raw + processed)")
+    logger.info("💾 Saving train/test to Unity Catalog (raw + processed)")
     data_processor.save_to_catalog(X_train, X_test)
-    
-    # Activar Change Data Feed para todas las tablas
+
+    # Enable Change Data Feed for all tables
     if hasattr(data_processor, 'enable_change_data_feed'):
-        logger.info("🔁 Activando Change Data Feed para tablas")
+        logger.info("🔁 Enabling Change Data Feed for tables")
         data_processor.enable_change_data_feed()
     else:
-        logger.warning("⚠️ Método enable_change_data_feed no encontrado")
-        
-    logger.info("✅ Datos disponibles tanto en formato raw como procesado")
+        logger.warning("⚠️ Method enable_change_data_feed not found")
+
+    logger.info("✅ Data available in both raw and processed formats")
 except Exception as e:
-    logger.warning(f"⚠️ No se pudo guardar en Unity Catalog: {e}")
-    logger.info("ℹ️ Los datos están disponibles en el volumen")
+    logger.warning(f"⚠️ Could not save to Unity Catalog: {e}")
+    logger.info("ℹ️ Data is available in the volume")
 
 # COMMAND ----------
-# NUEVO: Activar Change Data Feed para volúmenes (opcional)
+# Enable Change Data Feed for volumes (optional)
 
 try:
-    logger.info("🔁 Activando Change Data Feed para volúmenes")
+    logger.info("🔁 Enabling Change Data Feed for volumes")
     data_processor.enable_volume_change_data_feed()
 except Exception as e:
-    logger.warning(f"⚠️ No se pudo activar Change Data Feed para volúmenes: {e}")
+    logger.warning(f"⚠️ Could not enable Change Data Feed for volumes: {e}")
 
-# COMMAND ----------
+"""
+This Databricks notebook performs the initial data loading, preprocessing, and saving steps for a bank marketing MLOps project.
+
+It leverages a configuration file for project settings and utilizes custom modules for data processing and volume management.
+
+Key steps include:
+    - Loading project configuration.
+    - Initializing a Spark session.
+    - Loading the raw data from a CSV file.
+    - Preprocessing the data using a dedicated DataProcessor class.
+    - Splitting the data into training and testing sets.
+    - Creating and verifying the existence of a Databricks Volume.
+    - Saving both the raw and processed data to the configured Volume.
+    - Optionally saving the data to Unity Catalog for compatibility.
+    - Optionally enabling Change Data Feed (CDF) for both Unity Catalog tables and Databricks Volumes.
+
+The notebook uses logging extensively to provide insights into the execution flow and potential issues.
+"""

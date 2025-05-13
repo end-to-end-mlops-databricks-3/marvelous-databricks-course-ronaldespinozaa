@@ -2,38 +2,36 @@
 name = "bank_marketing"
 description = "MLOps with Databricks course bank_marketing model"
 requires-python = ">=3.11, <3.12"
-dependencies = ["mlflow==2.17.0",
-                "cffi==1.17.1",
-                "cloudpickle==3.1.0",
-                "matplotlib==3.9.2",
-                "numpy==1.26.4",
-                "pandas==2.2.3",
-                "psutil==6.0.0",
-                "pyarrow==14.0.1",
-                "scikit-learn==1.5.2",
-                "lightgbm==4.5.0",
-                "scipy==1.14.1",
-                "databricks-feature-engineering==0.6",
-                "databricks-feature-lookup==1.2.0",
-                "databricks-sdk==0.32.0",
-                "pydantic==2.9.2",
-                "loguru==0.7.3",
-                "marvelous@git+https://github.com/end-to-end-mlops-databricks-3/marvelous@0.1.0",
-                ]
-
+dependencies = [
+    "mlflow==2.17.0",
+    "cffi==1.17.1",
+    "cloudpickle==3.1.0",
+    "matplotlib==3.9.2",
+    "numpy==1.26.4",
+    "pandas==2.2.3",
+    "psutil==6.0.0",
+    "pyarrow==14.0.1",
+    "scikit-learn==1.5.2",
+    "lightgbm==4.5.0",
+    "scipy==1.14.1",
+    "databricks-feature-engineering==0.6",
+    "databricks-feature-lookup==1.2.0",
+    "databricks-sdk==0.32.0",
+    "pydantic==2.9.2",
+    "loguru==0.7.3",
+    "marvelous@git+https://github.com/end-to-end-mlops-databricks-3/marvelous@0.1.0",
+]
 dynamic = ['version']
-
-[tool.uv.sources]
-marvelous = {git = "https://${GITHUB_TOKEN}@github.com/end-to-end-mlops-databricks-3/marvelous.git", rev="0.1.0"}
 
 [project.optional-dependencies]
 dev = ["databricks-connect==15.4.5",
        "ipykernel>=6.29.5, <7",
        "pip>=24.2",
        "pre-commit>=4.1.0, <5",
-       "pytest>=8.3.4, <9",            
+       "pytest>=8.3.4, <9",
+       "pytest>=8.3.4, <9",
     ]
-    
+
 test = [
     "pre-commit>=4.1.0, <5",
     "delta-spark==3.3.0",
@@ -50,6 +48,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where =["src"]
 include = ["bank_marketing*"]
+
 
 [tool.setuptools.dynamic]
 version = { file = "version.txt" }
