@@ -16,7 +16,6 @@ import pandas as pd
 
 from bank_marketing.config import ProjectConfig
 from bank_marketing.data_processor import DataProcessor
-# NEW: VolumeManager import
 from infrastructure.volume_manager import VolumeManager
 from marvelous.logging import setup_logging
 from marvelous.timer import Timer
@@ -30,7 +29,6 @@ setup_logging(log_file="logs/marvelous-1.log")
 logger.info("✅ Configuration loaded:")
 logger.info(yaml.dump(config, default_flow_style=False))
 
-# COMMAND ----------
 # Initialize Spark and load CSV from Unity Catalog
 spark = SparkSession.builder.getOrCreate()
 
@@ -41,36 +39,28 @@ df = pd.read_csv(filepath)
 
 logger.info(f"📥 Data loaded from: {filepath} - Shape: {df.shape}")
 
-# COMMAND ----------
 # Preprocessing
 with Timer() as preprocess_timer:
     data_processor = DataProcessor(df, config, spark)
     data_processor.preprocess()
 logger.info(f"⚙️ Preprocessing completed in: {preprocess_timer}")
 
-# COMMAND ----------
 # Train/test split
 X_train, X_test = data_processor.split_data()
 logger.info(f"📊 Train shape: {X_train.shape} | Test shape: {X_test.shape}")
 
-# COMMAND ----------
-# NEW: Volume creation and verification
-
-# Verify that the volume exists
+# Volume creation and verification
 volume_manager = VolumeManager(spark, config)
 volume_manager.ensure_volume_exists()
 
 logger.info(f"📦 Volume configured: {volume_manager.volume_path}")
 
-# COMMAND ----------
-# NEW: Save to Volume
-
+# Save to Volume
 logger.info("💾 Saving data to volume (raw + processed)")
 with Timer() as volume_timer:
     data_processor.save_to_volume(X_train, X_test)
 logger.info(f"⏱️ Data saved to volume in: {volume_timer}")
 
-# COMMAND ----------
 # Save to Unity Catalog (maintained for compatibility)
 try:
     logger.info("💾 Saving train/test to Unity Catalog (raw + processed)")
@@ -88,30 +78,9 @@ except Exception as e:
     logger.warning(f"⚠️ Could not save to Unity Catalog: {e}")
     logger.info("ℹ️ Data is available in the volume")
 
-# COMMAND ----------
 # Enable Change Data Feed for volumes (optional)
-
 try:
     logger.info("🔁 Enabling Change Data Feed for volumes")
     data_processor.enable_volume_change_data_feed()
 except Exception as e:
     logger.warning(f"⚠️ Could not enable Change Data Feed for volumes: {e}")
-
-"""
-This Databricks notebook performs the initial data loading, preprocessing, and saving steps for a bank marketing MLOps project.
-
-It leverages a configuration file for project settings and utilizes custom modules for data processing and volume management.
-
-Key steps include:
-    - Loading project configuration.
-    - Initializing a Spark session.
-    - Loading the raw data from a CSV file.
-    - Preprocessing the data using a dedicated DataProcessor class.
-    - Splitting the data into training and testing sets.
-    - Creating and verifying the existence of a Databricks Volume.
-    - Saving both the raw and processed data to the configured Volume.
-    - Optionally saving the data to Unity Catalog for compatibility.
-    - Optionally enabling Change Data Feed (CDF) for both Unity Catalog tables and Databricks Volumes.
-
-The notebook uses logging extensively to provide insights into the execution flow and potential issues.
-"""

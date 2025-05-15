@@ -1,3 +1,24 @@
+"""
+This script performs data loading, preprocessing, and saving for a bank marketing dataset
+within a Databricks environment, leveraging Unity Catalog for data storage.
+
+It takes the environment as a command-line argument to load the appropriate project configuration.
+
+Key steps include:
+    - Loading project configuration from a YAML file based on the specified environment.
+    - Setting up logging to a file within a Databricks Volume, organized by catalog and schema.
+    - Initializing a Spark session.
+    - Constructing the path to the dataset within Unity Catalog using the configured catalog and schema.
+    - Validating the existence of the dataset file.
+    - Loading the data from Unity Catalog into a pandas DataFrame using Spark.
+    - Preprocessing the data using a dedicated DataProcessor class.
+    - Splitting the preprocessed data into training and testing sets.
+    - Saving the training and testing sets back to Unity Catalog.
+
+The script utilizes logging to provide detailed information about the execution process,
+including configuration loading, data loading, preprocessing duration, and data saving.
+"""
+
 import argparse
 import os
 import yaml
@@ -11,6 +32,12 @@ from marvelous.timer import Timer
 
 
 def main(env: str):
+    """
+    Main function to load, preprocess, split, and save the bank marketing dataset.
+
+    Args:
+        env (str): Environment name to load the appropriate configuration (e.g., 'dev', 'acc', 'prd').
+    """
     # Robust path to the YAML configuration file
     base_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(base_dir, "../project_config.yml")
@@ -66,22 +93,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(env=args.env)
-
-"""
-This script performs data loading, preprocessing, and saving for a bank marketing dataset within a Databricks environment, leveraging Unity Catalog for data storage.
-
-It takes the environment as a command-line argument to load the appropriate project configuration.
-
-Key steps include:
-    - Loading project configuration from a YAML file based on the specified environment.
-    - Setting up logging to a file within a Databricks Volume, organized by catalog and schema.
-    - Initializing a Spark session.
-    - Constructing the path to the dataset within Unity Catalog using the configured catalog and schema.
-    - Validating the existence of the dataset file.
-    - Loading the data from Unity Catalog into a pandas DataFrame using Spark.
-    - Preprocessing the data using a dedicated DataProcessor class.
-    - Splitting the preprocessed data into training and testing sets.
-    - Saving the training and testing sets back to Unity Catalog.
-
-The script utilizes logging to provide detailed information about the execution process, including configuration loading, data loading, preprocessing duration, and data saving.
-"""
