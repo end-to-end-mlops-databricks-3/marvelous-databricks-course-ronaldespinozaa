@@ -1,4 +1,5 @@
-"""
+"""Load, preprocess, split, and save the bank marketing dataset.
+
 This script performs data loading, preprocessing, and saving for a bank marketing dataset
 within a Databricks environment, leveraging Unity Catalog for data storage.
 
