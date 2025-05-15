@@ -4,7 +4,7 @@ from bank_marketing.config import ProjectConfig
 class VolumeManager:
     """Manages Databricks Volume operations for MLOps projects."""
     
-    def __init__(self, spark: SparkSession, config: ProjectConfig):
+    def __init__(self, spark: SparkSession, config: ProjectConfig) -> None:
         self.spark = spark
         self.config = config
         self.volume_path = self._get_volume_path()

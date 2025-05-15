@@ -31,7 +31,7 @@ from marvelous.logging import setup_logging
 from marvelous.timer import Timer
 
 
-def main(env: str):
+def main(env: str) -> None:
     """
     Main function to load, preprocess, split, and save the bank marketing dataset.
 

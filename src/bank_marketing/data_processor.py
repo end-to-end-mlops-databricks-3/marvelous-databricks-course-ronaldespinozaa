@@ -1,3 +1,43 @@
+"""
+This class, `DataProcessor`, is designed to preprocess, split, and store the Bank Marketing dataset.
+
+It handles various data cleaning and transformation steps, prepares the data for machine learning,
+and provides functionalities to save the processed data to both Unity Catalog tables and Databricks Volumes.
+
+Methods:
+    - __init__(self, pandas_df: pd.DataFrame, config: ProjectConfig, spark: SparkSession):
+        Initializes the DataProcessor with a pandas DataFrame, project configuration, and a SparkSession.
+
+    - preprocess(self) -> None:
+        Preprocesses the raw dataset by converting column types, handling missing values (replacing 'unknown' with NaN,
+        filling NaNs in categorical columns with 'missing' and in numeric columns with 0), encoding the target variable
+        to binary (1 for 'yes', 0 for 'no'), and selecting relevant features as defined in the project configuration.
+
+    - split_data(self, test_size: float = 0.2, random_state: int = 42) -> tuple[pd.DataFrame, pd.DataFrame]:
+        Splits the processed DataFrame into training and testing sets using scikit-learn's `train_test_split`.
+
+    - save_to_catalog(self, train_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
+        Saves the training and testing DataFrames to Delta tables in Unity Catalog. It saves two versions:
+        a 'raw' version where the target variable is kept as a string ('yes'/'no') for audit purposes,
+        and a 'processed' version where the target is numeric (1/0) for model training. It also adds
+        an `update_timestamp_utc` column and overwrites existing tables.
+
+    - enable_change_data_feed(self) -> None:
+        Enables Delta Lake Change Data Feed (CDF) on all the created tables in Unity Catalog
+        ('train_raw', 'test_raw', 'train_processed', 'test_processed'). CDF allows tracking changes
+        made to the tables over time.
+
+    - save_to_volume(self, train_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
+        Saves the training and testing DataFrames to Databricks Volumes in two formats, similar to `save_to_catalog`:
+        'raw' (target as string) and 'processed' (target as numeric). It initializes the VolumeManager,
+        ensures the volume exists, and saves the data as Delta tables with the `overwriteSchema` option
+        enabled, adding an `update_timestamp_utc` column.
+
+    - enable_volume_change_data_feed(self) -> None:
+        Enables Delta Lake Change Data Feed (CDF) on all the Delta tables saved within the Databricks Volume
+        ('raw/train', 'raw/test', 'processed/train', 'processed/test').
+"""
+
 import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
@@ -246,42 +286,3 @@ class DataProcessor:
 
         print("Change Data Feed enabled for all tables in volume")
 
-"""
-This class, `DataProcessor`, is designed to preprocess, split, and store the Bank Marketing dataset.
-
-It handles various data cleaning and transformation steps, prepares the data for machine learning,
-and provides functionalities to save the processed data to both Unity Catalog tables and Databricks Volumes.
-
-Methods:
-    - __init__(self, pandas_df: pd.DataFrame, config: ProjectConfig, spark: SparkSession):
-        Initializes the DataProcessor with a pandas DataFrame, project configuration, and a SparkSession.
-
-    - preprocess(self) -> None:
-        Preprocesses the raw dataset by converting column types, handling missing values (replacing 'unknown' with NaN,
-        filling NaNs in categorical columns with 'missing' and in numeric columns with 0), encoding the target variable
-        to binary (1 for 'yes', 0 for 'no'), and selecting relevant features as defined in the project configuration.
-
-    - split_data(self, test_size: float = 0.2, random_state: int = 42) -> tuple[pd.DataFrame, pd.DataFrame]:
-        Splits the processed DataFrame into training and testing sets using scikit-learn's `train_test_split`.
-
-    - save_to_catalog(self, train_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
-        Saves the training and testing DataFrames to Delta tables in Unity Catalog. It saves two versions:
-        a 'raw' version where the target variable is kept as a string ('yes'/'no') for audit purposes,
-        and a 'processed' version where the target is numeric (1/0) for model training. It also adds
-        an `update_timestamp_utc` column and overwrites existing tables.
-
-    - enable_change_data_feed(self) -> None:
-        Enables Delta Lake Change Data Feed (CDF) on all the created tables in Unity Catalog
-        ('train_raw', 'test_raw', 'train_processed', 'test_processed'). CDF allows tracking changes
-        made to the tables over time.
-
-    - save_to_volume(self, train_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
-        Saves the training and testing DataFrames to Databricks Volumes in two formats, similar to `save_to_catalog`:
-        'raw' (target as string) and 'processed' (target as numeric). It initializes the VolumeManager,
-        ensures the volume exists, and saves the data as Delta tables with the `overwriteSchema` option
-        enabled, adding an `update_timestamp_utc` column.
-
-    - enable_volume_change_data_feed(self) -> None:
-        Enables Delta Lake Change Data Feed (CDF) on all the Delta tables saved within the Databricks Volume
-        ('raw/train', 'raw/test', 'processed/train', 'processed/test').
-"""
