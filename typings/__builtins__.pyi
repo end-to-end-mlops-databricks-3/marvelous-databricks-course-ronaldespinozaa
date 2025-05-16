@@ -18,6 +18,3 @@ def displayHTML(html: str) -> None:
 
 def display(input: Any = None, *args: Any, **kwargs: Any) -> None:
     pass  # Indica que la función no hace nada por el momento
-
-
-

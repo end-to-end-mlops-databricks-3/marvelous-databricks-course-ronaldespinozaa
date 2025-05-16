@@ -30,12 +30,16 @@ dev = ["databricks-connect==15.4.5",
        "ipykernel>=6.29.5, <7",
        "pip>=24.2",
        "pre-commit>=4.1.0, <5",
-       "pytest>=8.3.4, <9",             # Added by MA
+       "pytest>=8.3.4, <9",
+       "marvelous@git+https://github.com/end-to-end-mlops-databricks-3/marvelous@0.1.0",
+
     ]
 test = [
     "delta-spark==3.3.0",
     "pyspark==3.5.3",
     "pytest>=8.3.5",
+    "marvelous@git+https://github.com/end-to-end-mlops-databricks-3/marvelous@0.1.0",
+
 ]
 
 [build-system]

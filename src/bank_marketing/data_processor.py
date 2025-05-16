@@ -285,4 +285,3 @@ class DataProcessor:
             self.spark.sql(f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true);")
 
         print("Change Data Feed enabled for all tables in volume")
-
