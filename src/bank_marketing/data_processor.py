@@ -140,8 +140,8 @@ class DataProcessor:
         )
 
         # Delete existing raw tables
-        self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.train_raw")
-        self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.test_raw")
+        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.train_raw")
+        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.test_raw")
 
         # Save raw version
         train_raw_sdf.write.mode("overwrite").saveAsTable(
@@ -153,8 +153,8 @@ class DataProcessor:
 
         # 2. Save PROCESSED version (target as numeric) for training
         # Delete existing processed tables
-        self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.train_processed")
-        self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.test_processed")
+        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.train_processed")
+        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.test_processed")
 
         # Create Spark DataFrames for processed data
         train_processed_sdf = self.spark.createDataFrame(train_df).withColumn(

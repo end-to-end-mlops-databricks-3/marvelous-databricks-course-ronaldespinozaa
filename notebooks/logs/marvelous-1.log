@@ -100,3 +100,105 @@ __pydantic_private__: null
 2025-05-16 09:41:59.402 | INFO     | __main__:<module>:62 - 🔁 Enabling Change Data Feed for tables
 2025-05-16 09:42:10.196 | INFO     | __main__:<module>:67 - ✅ Data available in both raw and processed formats
 2025-05-16 09:42:10.199 | INFO     | __main__:<module>:74 - 🔁 Enabling Change Data Feed for volumes
+2025-05-19 16:33:27.080 | INFO     | __main__:<module>:5 - ✅ Configuration loaded:
+2025-05-19 16:33:27.084 | INFO     | __main__:<module>:6 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+  volume_name: bank_marketing_dev
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+  volume_name: null
+__pydantic_private__: null
+
+2025-05-19 16:33:27.278 | INFO     | __main__:<module>:6 - 📥 Data loaded from: ../data/data.csv - Shape: (45211, 17)
+2025-05-19 16:33:27.383 | INFO     | __main__:<module>:5 - ⚙️ Preprocessing completed in: Elapsed time: 0.0652 seconds
+2025-05-19 16:33:27.417 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-19 16:40:11.744 | INFO     | __main__:<module>:8 - 📦 Volume configured: /Volumes/mlops_dev/espinoza/bank_marketing_dev
+2025-05-19 16:40:11.775 | INFO     | __main__:<module>:2 - 💾 Saving data to volume (raw + processed)
+2025-05-19 16:41:15.258 | INFO     | __main__:<module>:5 - ⏱️ Data saved to volume in: Elapsed time: 63.4810 seconds
+2025-05-19 16:41:15.296 | INFO     | __main__:<module>:3 - 💾 Saving train/test to Unity Catalog (raw + processed)
+2025-05-19 16:41:54.956 | INFO     | __main__:<module>:7 - 🔁 Enabling Change Data Feed for tables
+2025-05-19 16:42:08.737 | INFO     | __main__:<module>:12 - ✅ Data available in both raw and processed formats
+2025-05-19 16:42:08.768 | INFO     | __main__:<module>:3 - 🔁 Enabling Change Data Feed for volumes
+2025-05-19 16:50:55.869 | INFO     | __main__:<module>:5 - ✅ Configuration loaded:
+2025-05-19 16:50:55.873 | INFO     | __main__:<module>:6 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+  volume_name: bank_marketing_dev
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+  volume_name: null
+__pydantic_private__: null
+
+2025-05-19 16:50:56.165 | INFO     | __main__:<module>:6 - 📥 Data loaded from: ../data/data.csv - Shape: (45211, 17)
+2025-05-19 16:50:56.344 | INFO     | __main__:<module>:5 - ⚙️ Preprocessing completed in: Elapsed time: 0.1329 seconds
+2025-05-19 16:50:56.408 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-19 16:50:57.518 | INFO     | __main__:<module>:8 - 📦 Volume configured: /Volumes/mlops_dev/espinoza/bank_marketing_dev
+2025-05-19 16:50:57.580 | INFO     | __main__:<module>:2 - 💾 Saving data to volume (raw + processed)
+2025-05-19 16:51:29.639 | INFO     | __main__:<module>:5 - ⏱️ Data saved to volume in: Elapsed time: 32.0553 seconds
+2025-05-19 16:51:29.713 | INFO     | __main__:<module>:3 - 💾 Saving train/test to Unity Catalog (raw + processed)
+2025-05-19 16:52:03.195 | INFO     | __main__:<module>:7 - 🔁 Enabling Change Data Feed for tables
+2025-05-19 16:52:12.412 | INFO     | __main__:<module>:12 - ✅ Data available in both raw and processed formats
+2025-05-19 16:52:12.502 | INFO     | __main__:<module>:3 - 🔁 Enabling Change Data Feed for volumes
