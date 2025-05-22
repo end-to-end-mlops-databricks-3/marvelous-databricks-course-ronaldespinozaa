@@ -10,7 +10,6 @@ import pandas as pd
 from lightgbm import LGBMClassifier
 from loguru import logger
 from mlflow import MlflowClient
-from mlflow.data.dataset_source import DatasetSource
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
 from sklearn.compose import ColumnTransformer
@@ -46,7 +45,7 @@ class BasicModel:
         self.parameters = self.config.parameters
         self.catalog_name = self.config.catalog_name
         self.schema_name = self.config.schema_name
-        self.experiment_name = f"/{self.schema_name}/bank-marketing-model"
+        self.experiment_name = self.config.experiment_name_basic
         self.model_name = f"{self.catalog_name}.{self.schema_name}.bank_marketing_model"
         self.tags = tags.dict()
 
@@ -194,18 +193,60 @@ class BasicModel:
             description=f"Model trained with {len(self.X_train)} samples. ROC AUC: {mlflow.get_run(self.run_id).data.metrics['roc_auc']:.4f}",
         )
 
-    def retrieve_current_run_dataset(self) -> DatasetSource:
-        """Retrieve MLflow run dataset.
+    def retrieve_current_run_dataset(self) -> dict:
+        """Retrieve MLflow run dataset metadata.
 
         Returns:
-            Loaded dataset source
+            Dictionary with dataset metadata
 
         """
-        run = mlflow.get_run(self.run_id)
-        dataset_info = run.inputs.dataset_inputs[0].dataset
-        dataset_source = mlflow.data.get_source(dataset_info)
-        logger.info("✅ Dataset source loaded")
-        return dataset_source.load()
+        try:
+            run = mlflow.get_run(self.run_id)
+            if not run.inputs or not run.inputs.dataset_inputs:
+                logger.warning("⚠️ No dataset inputs found for this run.")
+                return {"error": "No dataset inputs found."}
+
+            dataset_info = run.inputs.dataset_inputs[0].dataset
+
+            # Initialize source_uri and source_name
+            source_uri = ""
+            source_name = ""
+
+            # Check if source is a string (direct URI) or an object with a URI attribute
+            if isinstance(dataset_info.source, str):
+                source_uri = dataset_info.source
+                source_name = dataset_info.source  # Often the URI itself can serve as a simple name
+            elif hasattr(dataset_info.source, "uri"):
+                source_uri = dataset_info.source.uri
+                # Try to get a more specific name if available, otherwise use the URI
+                source_name = getattr(dataset_info.source, "name", dataset_info.source.uri)
+            else:
+                logger.warning(f"⚠️ Could not determine source URI or name for type: {type(dataset_info.source)}")
+                source_uri = "Unknown URI"
+                source_name = "Unknown Name"
+
+            dataset_metadata = {
+                "name": dataset_info.name,
+                "digest": dataset_info.digest,
+                "source_type": dataset_info.source_type,
+                "source_uri": source_uri,
+                "source_name": source_name,
+                "table_name": dataset_info.name,  # Often the dataset name itself acts as the table name
+                "version": dataset_info.digest,  # Digest is a common identifier for version
+            }
+
+            # Use mlflow.data.get_source for potential additional metadata if applicable
+            # This is generally robust, but its 'metadata' attribute might not always be populated.
+            dataset_source_obj = mlflow.data.get_source(dataset_info)
+            if hasattr(dataset_source_obj, "metadata") and isinstance(dataset_source_obj.metadata, dict):
+                # Add any specific metadata from the structured source object
+                dataset_metadata["additional_metadata"] = dataset_source_obj.metadata
+
+            logger.info("✅ Dataset metadata loaded")
+            return dataset_metadata
+        except Exception as e:
+            logger.warning(f"⚠️ Could not retrieve dataset metadata: {e}")
+            return {"error": str(e)}
 
     def retrieve_current_run_metadata(self) -> tuple[dict, dict]:
         """Retrieve MLflow run metadata.

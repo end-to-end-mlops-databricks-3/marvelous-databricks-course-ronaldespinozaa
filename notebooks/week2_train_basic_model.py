@@ -22,17 +22,28 @@ from loguru import logger
 from marvelous.logging import setup_logging
 from marvelous.timer import Timer
 from pyspark.sql import SparkSession
-
+from dotenv import load_dotenv
 from bank_marketing.config import ProjectConfig, Tags
 from bank_marketing.models.basic_model import BasicModel
+from marvelous.common import is_databricks
+import mlflow
+import os
+
 
 # COMMAND ----------
 # MAGIC ## 1. Setup and Configuration
 
 # COMMAND ----------
+# If you have DEFAULT profile and are logged in with DEFAULT profile,
+# skip these lines
+
+if not is_databricks():
+    load_dotenv()
+    profile = os.environ["PROFILE"]
+    mlflow.set_tracking_uri(f"databricks://{profile}")
+    mlflow.set_registry_uri(f"databricks-uc://{profile}")
 # Initialize session and configuration
-# Initialize session and configuration
-spark = SparkSession.builder.getOrCreate() if "spark" not in locals() else spark
+spark = SparkSession.builder.getOrCreate()
 # Load configuration from YAML
 config = ProjectConfig.from_yaml(config_path="../project_config.yml", env="dev")
 
@@ -47,6 +58,7 @@ tags = Tags(
 )
 
 logger.info(f"✅ Configuration loaded for environment: {config.catalog_name}.{config.schema_name}")
+logger.info(f"🔗 MLflow tracking URI: {mlflow.get_tracking_uri()}")
 
 # COMMAND ----------
 
@@ -114,8 +126,10 @@ for param, value in params.items():
 
 # Retrieve dataset info (optional)
 try:
-    dataset = model.retrieve_current_run_dataset()
-    logger.info(f"📚 Dataset shape: {dataset.shape}")
+    dataset_info = model.retrieve_current_run_dataset()
+    logger.info(
+        f"📚 Dataset info: table={dataset_info.get('table_name', 'Unknown')}, version={dataset_info.get('version', 'Unknown')}"
+    )
 except Exception as e:
     logger.warning(f"⚠️ Could not retrieve dataset: {e}")
 

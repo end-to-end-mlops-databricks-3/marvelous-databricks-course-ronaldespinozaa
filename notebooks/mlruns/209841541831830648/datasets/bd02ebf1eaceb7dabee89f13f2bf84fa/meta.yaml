@@ -1,0 +1,19 @@
+digest: db87a07f
+name: dataset
+profile: 'null'
+schema: '{"mlflow_colspec": [{"type": "string", "name": "job", "required": true},
+  {"type": "string", "name": "marital", "required": true}, {"type": "string", "name":
+  "education", "required": true}, {"type": "string", "name": "default", "required":
+  true}, {"type": "string", "name": "housing", "required": true}, {"type": "string",
+  "name": "loan", "required": true}, {"type": "string", "name": "contact", "required":
+  true}, {"type": "string", "name": "month", "required": true}, {"type": "string",
+  "name": "poutcome", "required": true}, {"type": "long", "name": "age", "required":
+  true}, {"type": "long", "name": "balance", "required": true}, {"type": "long", "name":
+  "day", "required": true}, {"type": "long", "name": "duration", "required": true},
+  {"type": "long", "name": "campaign", "required": true}, {"type": "long", "name":
+  "pdays", "required": true}, {"type": "long", "name": "previous", "required": true},
+  {"type": "integer", "name": "Target", "required": true}, {"type": "datetime", "name":
+  "update_timestamp_utc", "required": true}]}'
+source: '{"delta_table_name": "mlops_dev.espinoza.train_processed", "delta_table_version":
+  "1", "is_databricks_uc_table": true, "delta_table_id": null}'
+source_type: delta_table

@@ -1,6 +1,7 @@
 """Configuration file for the Bank Marketing MLOps project."""
 
 from typing import Any
+
 import yaml
 from pydantic import BaseModel, Field
 
@@ -18,7 +19,9 @@ class ProjectConfig(BaseModel):
     catalog_name: str
     schema_name: str
     parameters: dict[str, Any]
-    volume_name: str 
+    volume_name: str
+    experiment_name_basic: str | None
+    experiment_name_custom: str | None
 
     @classmethod
     def from_yaml(cls, config_path: str, env: str = "dev") -> "ProjectConfig":
@@ -30,6 +33,7 @@ class ProjectConfig(BaseModel):
 
         Returns:
             ProjectConfig: Parsed configuration object.
+
         """
         valid_envs = {"dev", "acc", "prd"}
         if env not in valid_envs:
@@ -40,7 +44,6 @@ class ProjectConfig(BaseModel):
             config_dict["catalog_name"] = config_dict[env]["catalog_name"]
             config_dict["schema_name"] = config_dict[env]["schema_name"]
             config_dict["volume_name"] = config_dict[env]["volume_name"]  # Nueva línea
-
 
             return cls(**config_dict)
 

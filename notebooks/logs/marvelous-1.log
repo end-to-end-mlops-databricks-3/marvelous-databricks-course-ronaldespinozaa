@@ -49,3 +49,54 @@ __pydantic_private__: null
 2025-05-15 19:41:26.568 | INFO     | __main__:<module>:8 - 🔁 Enabling Change Data Feed for tables
 2025-05-15 19:41:37.618 | INFO     | __main__:<module>:13 - ✅ Data available in both raw and processed formats
 2025-05-15 19:41:37.650 | INFO     | __main__:<module>:4 - 🔁 Enabling Change Data Feed for volumes
+2025-05-21 15:16:07.421 | INFO     | __main__:<module>:20 - ✅ Configuration loaded:
+2025-05-21 15:16:07.424 | INFO     | __main__:<module>:21 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+  volume_name: bank_marketing_dev
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+  volume_name: null
+__pydantic_private__: null
+
+2025-05-21 15:16:07.505 | INFO     | __main__:<module>:31 - 📥 Data loaded from: ../data/data.csv - Shape: (45211, 17)
+2025-05-21 15:16:07.570 | INFO     | __main__:<module>:37 - ⚙️ Preprocessing completed in: Elapsed time: 0.0629 seconds
+2025-05-21 15:16:07.580 | INFO     | __main__:<module>:41 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-21 15:16:14.023 | INFO     | __main__:<module>:47 - 📦 Volume configured: /Volumes/mlops_dev/espinoza/bank_marketing_dev
+2025-05-21 15:16:14.025 | INFO     | __main__:<module>:50 - 💾 Saving data to volume (raw + processed)
+2025-05-21 15:17:16.820 | INFO     | __main__:<module>:53 - ⏱️ Data saved to volume in: Elapsed time: 62.7926 seconds
+2025-05-21 15:17:16.824 | INFO     | __main__:<module>:57 - 💾 Saving train/test to Unity Catalog (raw + processed)
+2025-05-21 15:17:57.423 | INFO     | __main__:<module>:62 - 🔁 Enabling Change Data Feed for tables
+2025-05-21 15:18:09.101 | INFO     | __main__:<module>:67 - ✅ Data available in both raw and processed formats
+2025-05-21 15:18:09.103 | INFO     | __main__:<module>:74 - 🔁 Enabling Change Data Feed for volumes

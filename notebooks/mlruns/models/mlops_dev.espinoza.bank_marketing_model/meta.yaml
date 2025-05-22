@@ -1,0 +1,7 @@
+aliases:
+  latest-model: '7'
+creation_timestamp: 1747833605185
+description: LightGBM classifier for Bank Marketing dataset. Predicts if a client
+  will subscribe to a term deposit.
+last_updated_timestamp: 1747906337042
+name: mlops_dev.espinoza.bank_marketing_model
