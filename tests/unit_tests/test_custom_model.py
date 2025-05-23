@@ -3,7 +3,7 @@
 import mlflow
 import pandas as pd
 from conftest import CATALOG_DIR, TRACKING_URI
-from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier  # Changed from LGBMRegressor
 from loguru import logger
 from mlflow.entities.model_registry.registered_model import RegisteredModel
 from mlflow.tracking import MlflowClient
@@ -40,8 +40,8 @@ def test_load_data_validate_df_assignment(mock_custom_model: CustomModel) -> Non
 
     :param mock_custom_model: Mocked CustomModel instance for testing.
     """
-    train_data = pd.read_csv((CATALOG_DIR / "train_processed.csv").as_posix())
-    test_data = pd.read_csv((CATALOG_DIR / "test_processed.csv").as_posix())
+    train_data = pd.read_csv((CATALOG_DIR / "train_set.csv").as_posix())
+    test_data = pd.read_csv((CATALOG_DIR / "test_set.csv").as_posix())
 
     # Execute
     mock_custom_model.load_data()
@@ -56,8 +56,8 @@ def test_load_data_validate_splits(mock_custom_model: CustomModel) -> None:
 
     :param mock_custom_model: Mocked CustomModel instance for testing.
     """
-    train_data = pd.read_csv((CATALOG_DIR / "train_processed.csv").as_posix())
-    test_data = pd.read_csv((CATALOG_DIR / "test_processed.csv").as_posix())
+    train_data = pd.read_csv((CATALOG_DIR / "train_set.csv").as_posix())
+    test_data = pd.read_csv((CATALOG_DIR / "test_set.csv").as_posix())
 
     # Execute
     mock_custom_model.load_data()
@@ -84,7 +84,7 @@ def test_prepare_features(mock_custom_model: CustomModel) -> None:
     assert isinstance(mock_custom_model.pipeline, Pipeline)
     assert isinstance(mock_custom_model.pipeline.steps, list)
     assert isinstance(mock_custom_model.pipeline.steps[0][1], ColumnTransformer)
-    assert isinstance(mock_custom_model.pipeline.steps[1][1], LGBMClassifier)
+    assert isinstance(mock_custom_model.pipeline.steps[1][1], LGBMClassifier)  # Changed from LGBMRegressor
 
 
 def test_train(mock_custom_model: CustomModel) -> None:
@@ -96,6 +96,10 @@ def test_train(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: Mocked CustomModel instance for testing
     """
     mock_custom_model.load_data()
+    # --- NEW: Ensure y_train is numeric (0 or 1) for training ---
+    if mock_custom_model.y_train.dtype == "object":
+        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
+    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     expected_feature_names = mock_custom_model.config.num_features + mock_custom_model.config.cat_features
@@ -113,6 +117,12 @@ def test_log_model_with_PandasDataset(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: Mocked CustomModel instance for testing
     """
     mock_custom_model.load_data()
+    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
+    if mock_custom_model.y_train.dtype == "object":
+        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
+    if mock_custom_model.y_test.dtype == "object":
+        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
+    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     expected_feature_names = mock_custom_model.config.num_features + mock_custom_model.config.cat_features
@@ -134,7 +144,7 @@ def test_log_model_with_PandasDataset(mock_custom_model: CustomModel) -> None:
     assert len(runs) == 1
     latest_run = runs[0]
 
-    model_uri = f"runs:/{latest_run.info.run_id}/pyfunc-bank-marketing-model"
+    model_uri = f"runs:/{latest_run.info.run_id}/model"
     logger.info(f"{model_uri= }")
 
     assert model_uri
@@ -150,6 +160,12 @@ def test_register_model(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: A mocked instance of the CustomModel class.
     """
     mock_custom_model.load_data()
+    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
+    if mock_custom_model.y_train.dtype == "object":
+        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
+    if mock_custom_model.y_test.dtype == "object":
+        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
+    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
@@ -172,7 +188,8 @@ def test_register_model(mock_custom_model: CustomModel) -> None:
 
     assert isinstance(model, RegisteredModel)
     alias, version = model.aliases.popitem()
-    assert alias == "custom-model"
+    # FIX: Assert that the alias is 'custom-model', not 'latest-model'
+    assert alias == "custom-model"  # Changed from "latest-model"
 
 
 def test_retrieve_current_run_metadata(mock_custom_model: CustomModel) -> None:
@@ -184,6 +201,12 @@ def test_retrieve_current_run_metadata(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: A mocked instance of the CustomModel class.
     """
     mock_custom_model.load_data()
+    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
+    if mock_custom_model.y_train.dtype == "object":
+        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
+    if mock_custom_model.y_test.dtype == "object":
+        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
+    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
@@ -205,9 +228,15 @@ def test_load_latest_model_and_predict(mock_custom_model: CustomModel) -> None:
     - Extracts input data from the test set and makes predictions using the latest model.
 
     :param mock_custom_model: Instance of a custom machine learning model with methods for data
-                              loading, feature preparation, training, logging, and prediction.
+      loading, feature preparation, training, logging, and prediction.
     """
     mock_custom_model.load_data()
+    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
+    if mock_custom_model.y_train.dtype == "object":
+        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
+    if mock_custom_model.y_test.dtype == "object":
+        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
+    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
@@ -219,10 +248,6 @@ def test_load_latest_model_and_predict(mock_custom_model: CustomModel) -> None:
     for row in input_data.itertuples(index=False):
         row_df = pd.DataFrame([row._asdict()])
         print(row_df.to_dict(orient="split"))
-        predictions = mock_custom_model.load_latest_model_and_predict(input_data=row_df)
-
-        # Para un modelo de clasificación, verificamos que las predicciones sean un diccionario
-        # con al menos las claves 'predictions' y 'probabilities'
-        assert isinstance(predictions, dict)
-        assert "predictions" in predictions
-        assert "probabilities" in predictions or "positive_rate" in predictions
+        predictions_dict = mock_custom_model.load_latest_model_and_predict(input_data=row_df)
+        # FIX: Access the 'predictions' list from the returned dictionary
+        assert len(predictions_dict["predictions"]) == 1

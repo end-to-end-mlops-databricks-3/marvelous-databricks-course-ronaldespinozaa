@@ -5,6 +5,8 @@ It demonstrates how to wrap a scikit-learn model in a custom Python function mod
 to add additional preprocessing and postprocessing steps.
 """
 
+from typing import Literal
+
 import mlflow
 import numpy as np
 import pandas as pd
@@ -255,11 +257,11 @@ class CustomModel:
         self.pipeline.fit(self.X_train, self.y_train)
         logger.info("✅ Model training completed")
 
-    def log_model(self) -> None:
+    def log_model(self, dataset_type: Literal["PandasDataset", "SparkDataset"] = "SparkDataset") -> None:
         """Log the model using MLflow pyfunc."""
         logger.info("📝 Logging model with MLflow pyfunc...")
         mlflow.set_experiment(self.experiment_name)
-        additional_pip_deps = ["pyspark==3.5.0"]
+        additional_pip_deps = ["pyspark==3.5.0"]  # Podría ser condicional también, ver abajo
         for package in self.code_paths:
             whl_name = package.split("/")[-1]
             additional_pip_deps.append(f"./code/{whl_name}")
@@ -268,6 +270,7 @@ class CustomModel:
             self.run_id = run.info.run_id
 
             # Make predictions
+            # Asumo que X_test es un Pandas DataFrame o similar para predict
             y_pred = self.pipeline.predict(self.X_test)
             y_pred_proba = self.pipeline.predict_proba(self.X_test)[:, 1]
 
@@ -297,17 +300,36 @@ class CustomModel:
             wrapped_model = BankMarketingModelWrapper(self.pipeline)
 
             # Compute input example and signature
-            input_example = self.X_test.iloc[:5]
+            # Asegúrate de que X_train sea un Pandas DataFrame para .iloc
+            input_example = self.X_train.iloc[:5]
             predictions = wrapped_model.predict(None, input_example)
             signature = infer_signature(model_input=input_example, model_output=predictions)
 
-            # Log the dataset
-            dataset = mlflow.data.from_spark(
-                self.train_set_spark,
-                table_name=f"{self.catalog_name}.{self.schema_name}.train_processed",
-                version=self.data_version,
-            )
-            mlflow.log_input(dataset, context="training")
+            # --- CORRECCIÓN AQUÍ: USO DEL PARÁMETRO dataset_type ---
+            if dataset_type == "SparkDataset":
+                if not hasattr(self, "train_set_spark") or self.train_set_spark is None:
+                    logger.warning("⚠️ train_set_spark no está disponible. No se registrará el dataset de Spark.")
+                else:
+                    dataset = mlflow.data.from_spark(
+                        self.train_set_spark,
+                        table_name=f"{self.catalog_name}.{self.schema_name}.train_processed",
+                        version=self.data_version,
+                    )
+                    mlflow.log_input(dataset, context="training")
+            elif dataset_type == "PandasDataset":
+                if not hasattr(self, "train_set_pandas") or self.train_set_pandas is None:
+                    logger.warning("⚠️ train_set_pandas no está disponible. No se registrará el dataset de Pandas.")
+                else:
+                    dataset = mlflow.data.from_pandas(
+                        self.train_set_pandas,
+                        source="in_memory",  # O una ruta si lo cargas de archivo
+                        name=f"{self.catalog_name}.{self.schema_name}.train_processed",
+                        version=self.data_version,
+                    )
+                    mlflow.log_input(dataset, context="training")
+            else:
+                logger.warning(f"Tipo de dataset no soportado: {dataset_type}. No se registrará ningún dataset.")
+            # --- FIN DE LA CORRECCIÓN ---
 
             conda_env = _mlflow_conda_env(additional_pip_deps=additional_pip_deps)
 
