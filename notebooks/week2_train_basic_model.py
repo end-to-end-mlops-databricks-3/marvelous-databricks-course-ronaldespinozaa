@@ -174,9 +174,4 @@ logger.info(f"""
    - ROC AUC: {metrics.get("roc_auc", "N/A")}
    - Training samples: {len(model.X_train)}
 
-✨ MLOps Next Steps:
-   1. Model validation and promotion to staging
-   2. Model deployment for batch or real-time inference
-   3. Model monitoring for data drift
-   4. A/B testing with champion/challenger models
 """)

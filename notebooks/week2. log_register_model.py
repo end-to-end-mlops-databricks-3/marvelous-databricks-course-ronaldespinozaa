@@ -2,8 +2,8 @@
 # MAGIC %md
 # MAGIC # Logging and Registering Models with MLflow
 # MAGIC
-# MAGIC Este notebook demuestra diferentes enfoques para registrar modelos con MLflow
-# MAGIC usando Databricks Asset Bundles y Unity Catalog.
+# MAGIC This notebook demonstrates different approaches to registering models with MLflow
+# MAGIC using Databricks Asset Bundles and Unity Catalog.
 
 # COMMAND ----------
 
@@ -20,77 +20,77 @@ from lightgbm import LGBMClassifier
 from mlflow.models import infer_signature
 from mlflow import MlflowClient
 
-# Importar versión del paquete si está disponible
+# Import package version if available
 try:
     from bank_marketing import __version__
 except ImportError:
-    __version__ = "0.1.0"  # Versión por defecto
+    __version__ = "0.1.0"  # Default version
 
 from mlflow.utils.environment import _mlflow_conda_env
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 1. Configuración de MLflow para Databricks Asset Bundles
+# MAGIC ## 1. MLflow Configuration for Databricks Asset Bundles
 
 # COMMAND ----------
 
-# Configurar MLflow para Unity Catalog (esto es automático en Databricks)
+# Configure MLflow for Unity Catalog (this is automatic in Databricks)
 if "DATABRICKS_RUNTIME_VERSION" in os.environ:
-    print("✅ Ejecutando en Databricks - configuración automática")
-    # En Databricks, MLflow ya está configurado para Unity Catalog
+    print("✅ Running on Databricks - automatic configuration")
+    # In Databricks, MLflow is already configured for Unity Catalog
     mlflow.set_tracking_uri("databricks")
     mlflow.set_registry_uri("databricks-uc")
 else:
-    print("⚠️ Ejecutando localmente")
-    # Para desarrollo local con DAB
+    print("⚠️ Running locally")
+    # For local development with DAB
     try:
         from databricks.connect import DatabricksSession
 
         spark = DatabricksSession.builder.getOrCreate()
-        print("✅ Conectado usando Databricks Connect")
+        print("✅ Connected using Databricks Connect")
     except ImportError:
-        print("❌ Databricks Connect no disponible, usando Spark local")
+        print("❌ Databricks Connect not available, using local Spark")
         spark = SparkSession.builder.getOrCreate()
 
-# Cargar configuración
+# Load configuration
 config = ProjectConfig.from_yaml(config_path="../project_config.yml", env="dev")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 2. Inicializar Spark y cargar datos
+# MAGIC ## 2. Initialize Spark and Load Data
 
 # COMMAND ----------
 
-# Obtener SparkSession (en Databricks ya está disponible como 'spark')
+# Get SparkSession (in Databricks it's already available as 'spark')
 try:
-    # En Databricks, 'spark' ya está definido
+    # In Databricks, 'spark' is already defined
     spark = spark
-    print("✅ Usando SparkSession de Databricks")
+    print("✅ Using Databricks SparkSession")
 except NameError:
-    # Para ejecución local
+    # For local execution
     spark = SparkSession.builder.getOrCreate()
-    print("✅ SparkSession local creado")
+    print("✅ Local SparkSession created")
 
-# Cargar datos de entrenamiento con manejo de errores
+# Load training data with error handling
 try:
-    # Intentar cargar desde Unity Catalog
+    # Attempt to load from Unity Catalog
     train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_processed").toPandas()
-    print("✅ Datos cargados desde Unity Catalog")
+    print("✅ Data loaded from Unity Catalog")
 except Exception as e:
-    print(f"⚠️ No se pudo cargar desde Unity Catalog: {e}")
+    print(f"⚠️ Could not load from Unity Catalog: {e}")
 
-    # Crear datos sintéticos para demostración
+    # Create synthetic data for demonstration
     import numpy as np
 
     np.random.seed(42)
 
-    # Crear datos que coincidan con tu configuración
+    # Create data that matches your configuration
     n_samples = 1000
     synthetic_data = {}
 
-    # Crear características numéricas
+    # Create numerical features
     for col in config.num_features:
         if col == "age":
             synthetic_data[col] = np.random.randint(18, 70, n_samples)
@@ -99,7 +99,7 @@ except Exception as e:
         else:
             synthetic_data[col] = np.random.normal(0, 1, n_samples)
 
-    # Crear características categóricas
+    # Create categorical features
     for col in config.cat_features:
         if col == "job":
             synthetic_data[col] = np.random.choice(["admin", "blue-collar", "management", "technician"], n_samples)
@@ -108,31 +108,31 @@ except Exception as e:
         else:
             synthetic_data[col] = np.random.choice(["A", "B", "C"], n_samples)
 
-    # Crear target
+    # Create target
     synthetic_data[config.target] = np.random.choice([0, 1], n_samples)
 
     train_set = pd.DataFrame(synthetic_data)
-    print("✅ Datos sintéticos creados")
+    print("✅ Synthetic data created")
 
-# Separar features y target
+# Separate features and target
 X_train = train_set[config.num_features + config.cat_features]
 y_train = train_set[config.target]
 
-print(f"📊 Forma de datos: {X_train.shape}")
+print(f"📊 Data shape: {X_train.shape}")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 3. Crear y entrenar un pipeline básico
+# MAGIC ## 3. Create and Train a Basic Pipeline
 
 # COMMAND ----------
 
-# Definir el pipeline con preprocesamiento para clasificación
+# Define the pipeline with preprocessing for classification
 numeric_transformer = Pipeline(steps=[("scaler", StandardScaler())])
 
 categorical_transformer = Pipeline(steps=[("onehot", OneHotEncoder(handle_unknown="ignore"))])
 
-# Combinar transformers
+# Combine transformers
 preprocessor = ColumnTransformer(
     transformers=[
         ("num", numeric_transformer, config.num_features),
@@ -140,35 +140,35 @@ preprocessor = ColumnTransformer(
     ]
 )
 
-# Crear el pipeline completo con clasificador
+# Create the full pipeline with classifier
 pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("classifier", LGBMClassifier(**config.parameters))])
 
-# Entrenar el modelo
+# Train the model
 pipeline.fit(X_train, y_train)
-print("✅ Modelo entrenado correctamente")
+print("✅ Model trained successfully")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 4. Loguear el modelo con MLflow usando Unity Catalog
+# MAGIC ## 4. Log the Model with MLflow using Unity Catalog
 
 # COMMAND ----------
 
-# Configurar experimento usando la estructura de DAB
+# Configure experiment using DAB structure
 experiment_name = f"/{config.schema_name}/bank-marketing-demo"
 mlflow.set_experiment(experiment_name)
 
-# Iniciar run y loguear modelo
+# Start run and log model
 with mlflow.start_run(
     run_name="dab-demo-model",
     tags={"git_sha": "dab123", "branch": "main", "bundle": "marvelous-databricks-course-ronaldespinozaa"},
-    description="Modelo demo usando Databricks Asset Bundle",
+    description="Demo model using Databricks Asset Bundle",
 ) as run:
     run_id = run.info.run_id
-    mlflow.log_param("model_type", "LightGBM con preprocesamiento - DAB")
+    mlflow.log_param("model_type", "LightGBM with preprocessing - DAB")
     mlflow.log_params(config.parameters)
 
-    # Calcular y loguear métricas
+    # Calculate and log metrics
     y_pred = pipeline.predict(X_train)
     y_pred_proba = pipeline.predict_proba(X_train)[:, 1]
 
@@ -186,77 +186,77 @@ with mlflow.start_run(
     mlflow.log_metric("f1", f1)
     mlflow.log_metric("roc_auc", roc_auc)
 
-    print(f"📊 Métricas - Accuracy: {accuracy:.4f}, ROC AUC: {roc_auc:.4f}")
+    print(f"📊 Metrics - Accuracy: {accuracy:.4f}, ROC AUC: {roc_auc:.4f}")
 
-    # Inferir firma del modelo
+    # Infer model signature
     signature = infer_signature(model_input=X_train, model_output=y_pred_proba)
 
-    # Loguear el modelo
+    # Log the model
     mlflow.sklearn.log_model(sk_model=pipeline, artifact_path="lightgbm-pipeline-model", signature=signature)
 
-    print(f"✅ Modelo logueado con run_id: {run_id}")
+    print(f"✅ Model logged with run_id: {run_id}")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 5. Registrar modelo en Unity Catalog (formato correcto para DAB)
+# MAGIC ## 5. Register Model in Unity Catalog (Correct Format for DAB)
 
 # COMMAND ----------
 
-# Definir nombre del modelo usando la estructura correcta para Unity Catalog
+# Define model name using the correct structure for Unity Catalog
 model_name = f"{config.catalog_name}.{config.schema_name}.bank_marketing_model_demo"
 
 try:
-    # Registrar modelo
+    # Register model
     model_version = mlflow.register_model(
         model_uri=f"runs:/{run_id}/lightgbm-pipeline-model",
         name=model_name,
         tags={"bundle": "marvelous-databricks-course-ronaldespinozaa", "git_sha": "dab123"},
     )
 
-    print(f"✅ Modelo registrado: {model_name} versión {model_version.version}")
+    print(f"✅ Model registered: {model_name} version {model_version.version}")
 
-    # Configurar alias usando MLflow Client
+    # Set alias using MLflow Client
     client = MlflowClient()
 
-    # Configurar alias "dab-latest"
+    # Set "dab-latest" alias
     client.set_registered_model_alias(name=model_name, alias="dab-latest", version=model_version.version)
-    print(f"✅ Alias 'dab-latest' configurado para versión {model_version.version}")
+    print(f"✅ Alias 'dab-latest' configured for version {model_version.version}")
 
 except Exception as e:
-    print(f"⚠️ Error al registrar modelo: {e}")
-    print("Esto puede suceder si no tienes permisos en Unity Catalog")
+    print(f"⚠️ Error registering model: {e}")
+    print("This can happen if you do not have permissions in Unity Catalog")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 6. Cargar modelo y hacer predicciones
+# MAGIC ## 6. Load Model and Make Predictions
 
 # COMMAND ----------
 
 try:
-    # Cargar modelo usando el alias
+    # Load model using the alias
     model_uri = f"models:/{model_name}@dab-latest"
     sklearn_pipeline = mlflow.sklearn.load_model(model_uri)
 
-    # Hacer predicciones en una muestra
+    # Make predictions on a sample
     sample_data = X_train.iloc[:5]
     predictions = sklearn_pipeline.predict(sample_data)
     probabilities = sklearn_pipeline.predict_proba(sample_data)[:, 1]
 
-    # Mostrar resultados
+    # Display results
     result_df = pd.DataFrame(
         {"prediction": predictions, "probability": probabilities, "actual": y_train.iloc[:5].values}
     )
 
     display(result_df)
-    print("✅ Predicciones realizadas exitosamente")
+    print("✅ Predictions made successfully")
 
 except Exception as e:
-    print(f"⚠️ Error al cargar modelo: {e}")
-    print("Usando modelo en memoria para demostración...")
+    print(f"⚠️ Error loading model: {e}")
+    print("Using in-memory model for demonstration...")
 
-    # Fallback a modelo en memoria
+    # Fallback to in-memory model
     sample_data = X_train.iloc[:5]
     predictions = pipeline.predict(sample_data)
     probabilities = pipeline.predict_proba(sample_data)[:, 1]
@@ -270,20 +270,316 @@ except Exception as e:
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 7. Modelo personalizado con pyfunc y DAB
+# MAGIC ## 7. Custom Model with pyfunc and DAB
+
+# COMMAND ----------
+
+# Databricks notebook source
+# MAGIC %md
+# MAGIC # Logging and Registering Models with MLflow
+# MAGIC
+# MAGIC This notebook demonstrates different approaches to registering models with MLflow
+# MAGIC using Databricks Asset Bundles and Unity Catalog.
+
+# COMMAND ----------
+
+from pyspark.sql import SparkSession
+import mlflow
+import pandas as pd
+import os
+
+from bank_marketing.config import ProjectConfig
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from lightgbm import LGBMClassifier
+from mlflow.models import infer_signature
+from mlflow import MlflowClient
+
+# Import package version if available
+try:
+    from bank_marketing import __version__
+except ImportError:
+    __version__ = "0.1.0"  # Default version
+
+from mlflow.utils.environment import _mlflow_conda_env
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 1. MLflow Configuration for Databricks Asset Bundles
+
+# COMMAND ----------
+
+# Configure MLflow for Unity Catalog (this is automatic in Databricks)
+if "DATABRICKS_RUNTIME_VERSION" in os.environ:
+    print("✅ Running on Databricks - automatic configuration")
+    # In Databricks, MLflow is already configured for Unity Catalog
+    mlflow.set_tracking_uri("databricks")
+    mlflow.set_registry_uri("databricks-uc")
+else:
+    print("⚠️ Running locally")
+    # For local development with DAB
+    try:
+        from databricks.connect import DatabricksSession
+
+        spark = DatabricksSession.builder.getOrCreate()
+        print("✅ Connected using Databricks Connect")
+    except ImportError:
+        print("❌ Databricks Connect not available, using local Spark")
+        spark = SparkSession.builder.getOrCreate()
+
+# Load configuration
+config = ProjectConfig.from_yaml(config_path="../project_config.yml", env="dev")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 2. Initialize Spark and Load Data
+
+# COMMAND ----------
+
+# Get SparkSession (in Databricks it's already available as 'spark')
+try:
+    # In Databricks, 'spark' is already defined
+    spark = spark
+    print("✅ Using Databricks SparkSession")
+except NameError:
+    # For local execution
+    spark = SparkSession.builder.getOrCreate()
+    print("✅ Local SparkSession created")
+
+# Load training data with error handling
+try:
+    # Attempt to load from Unity Catalog
+    train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_processed").toPandas()
+    print("✅ Data loaded from Unity Catalog")
+except Exception as e:
+    print(f"⚠️ Could not load from Unity Catalog: {e}")
+
+    # Create synthetic data for demonstration
+    import numpy as np
+
+    np.random.seed(42)
+
+    # Create data that matches your configuration
+    n_samples = 1000
+    synthetic_data = {}
+
+    # Create numerical features
+    for col in config.num_features:
+        if col == "age":
+            synthetic_data[col] = np.random.randint(18, 70, n_samples)
+        elif col == "balance":
+            synthetic_data[col] = np.random.normal(1000, 500, n_samples)
+        else:
+            synthetic_data[col] = np.random.normal(0, 1, n_samples)
+
+    # Create categorical features
+    for col in config.cat_features:
+        if col == "job":
+            synthetic_data[col] = np.random.choice(["admin", "blue-collar", "management", "technician"], n_samples)
+        elif col == "marital":
+            synthetic_data[col] = np.random.choice(["married", "single", "divorced"], n_samples)
+        else:
+            synthetic_data[col] = np.random.choice(["A", "B", "C"], n_samples)
+
+    # Create target
+    synthetic_data[config.target] = np.random.choice([0, 1], n_samples)
+
+    train_set = pd.DataFrame(synthetic_data)
+    print("✅ Synthetic data created")
+
+# Separate features and target
+X_train = train_set[config.num_features + config.cat_features]
+y_train = train_set[config.target]
+
+print(f"📊 Data shape: {X_train.shape}")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 3. Create and Train a Basic Pipeline
+
+# COMMAND ----------
+
+# Define the pipeline with preprocessing for classification
+numeric_transformer = Pipeline(steps=[("scaler", StandardScaler())])
+
+categorical_transformer = Pipeline(steps=[("onehot", OneHotEncoder(handle_unknown="ignore"))])
+
+# Combine transformers
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", numeric_transformer, config.num_features),
+        ("cat", categorical_transformer, config.cat_features),
+    ]
+)
+
+# Create the full pipeline with classifier
+pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("classifier", LGBMClassifier(**config.parameters))])
+
+# Train the model
+pipeline.fit(X_train, y_train)
+print("✅ Model trained successfully")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 4. Log the Model with MLflow using Unity Catalog
+
+# COMMAND ----------
+
+# Configure experiment using DAB structure
+experiment_name = f"/{config.schema_name}/bank-marketing-demo"
+mlflow.set_experiment(experiment_name)
+
+# Start run and log model
+with mlflow.start_run(
+    run_name="dab-demo-model",
+    tags={"git_sha": "dab123", "branch": "main", "bundle": "marvelous-databricks-course-ronaldespinozaa"},
+    description="Demo model using Databricks Asset Bundle",
+) as run:
+    run_id = run.info.run_id
+    mlflow.log_param("model_type", "LightGBM with preprocessing - DAB")
+    mlflow.log_params(config.parameters)
+
+    # Calculate and log metrics
+    y_pred = pipeline.predict(X_train)
+    y_pred_proba = pipeline.predict_proba(X_train)[:, 1]
+
+    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+
+    accuracy = accuracy_score(y_train, y_pred)
+    precision = precision_score(y_train, y_pred)
+    recall = recall_score(y_train, y_pred)
+    f1 = f1_score(y_train, y_pred)
+    roc_auc = roc_auc_score(y_train, y_pred_proba)
+
+    mlflow.log_metric("accuracy", accuracy)
+    mlflow.log_metric("precision", precision)
+    mlflow.log_metric("recall", recall)
+    mlflow.log_metric("f1", f1)
+    mlflow.log_metric("roc_auc", roc_auc)
+
+    print(f"📊 Metrics - Accuracy: {accuracy:.4f}, ROC AUC: {roc_auc:.4f}")
+
+    # Infer model signature
+    signature = infer_signature(model_input=X_train, model_output=y_pred_proba)
+
+    # Log the model
+    mlflow.sklearn.log_model(sk_model=pipeline, artifact_path="lightgbm-pipeline-model", signature=signature)
+
+    print(f"✅ Model logged with run_id: {run_id}")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 5. Register Model in Unity Catalog (Correct Format for DAB)
+
+# COMMAND ----------
+
+# Define model name using the correct structure for Unity Catalog
+model_name = f"{config.catalog_name}.{config.schema_name}.bank_marketing_model_demo"
+
+try:
+    # Register model
+    model_version = mlflow.register_model(
+        model_uri=f"runs:/{run_id}/lightgbm-pipeline-model",
+        name=model_name,
+        tags={"bundle": "marvelous-databricks-course-ronaldespinozaa", "git_sha": "dab123"},
+    )
+
+    print(f"✅ Model registered: {model_name} version {model_version.version}")
+
+    # Set alias using MLflow Client
+    client = MlflowClient()
+
+    # Set "dab-latest" alias
+    client.set_registered_model_alias(name=model_name, alias="dab-latest", version=model_version.version)
+    print(f"✅ Alias 'dab-latest' configured for version {model_version.version}")
+
+except Exception as e:
+    print(f"⚠️ Error registering model: {e}")
+    print("This can happen if you do not have permissions in Unity Catalog")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 6. Load Model and Make Predictions
+
+# COMMAND ----------
+
+try:
+    # Load model using the alias
+    model_uri = f"models:/{model_name}@dab-latest"
+    sklearn_pipeline = mlflow.sklearn.load_model(model_uri)
+
+    # Make predictions on a sample
+    sample_data = X_train.iloc[:5]
+    predictions = sklearn_pipeline.predict(sample_data)
+    probabilities = sklearn_pipeline.predict_proba(sample_data)[:, 1]
+
+    # Display results
+    result_df = pd.DataFrame(
+        {"prediction": predictions, "probability": probabilities, "actual": y_train.iloc[:5].values}
+    )
+
+    display(result_df)
+    print("✅ Predictions made successfully")
+
+except Exception as e:
+    print(f"⚠️ Error loading model: {e}")
+    print("Using in-memory model for demonstration...")
+
+    # Fallback to in-memory model
+    sample_data = X_train.iloc[:5]
+    predictions = pipeline.predict(sample_data)
+    probabilities = pipeline.predict_proba(sample_data)[:, 1]
+
+    result_df = pd.DataFrame(
+        {"prediction": predictions, "probability": probabilities, "actual": y_train.iloc[:5].values}
+    )
+
+    display(result_df)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## 7. Custom Model with pyfunc and DAB
 
 # COMMAND ----------
 
 
-# Clase wrapper para modelo personalizado
+# Wrapper class for custom model
 class BankMarketingModelWrapper(mlflow.pyfunc.PythonModel):
-    """Wrapper personalizado para el modelo de Bank Marketing con DAB."""
+    """Custom wrapper for the Bank Marketing model with DAB."""
 
     def __init__(self, model):
         self.model = model
 
     def predict(self, context, model_input):
         if isinstance(model_input, pd.DataFrame):
-            # Obtener predicciones
+            # Get predictions
             predictions = self.model.predict(model_input)
             probabilities = self.model.predict_proba(model_input)[:, 1]
+            return pd.DataFrame(
+                {"prediction": predictions, "probability": probabilities}
+            )  # Added return statement to complete the predict method
+
+
+# Wrapper class for custom model
+class BankMarketingModelWrapper(mlflow.pyfunc.PythonModel):
+    """Custom wrapper for the Bank Marketing model with DAB."""
+
+    def __init__(self, model):
+        self.model = model
+
+    def predict(self, context, model_input):
+        if isinstance(model_input, pd.DataFrame):
+            # Get predictions
+            predictions = self.model.predict(model_input)
+            probabilities = self.model.predict_proba(model_input)[:, 1]
+            return pd.DataFrame(
+                {"prediction": predictions, "probability": probabilities}
+            )  # Added return statement to complete the predict method

@@ -211,9 +211,4 @@ print(f"""
      - Custom code integration
      - Model aliasing
 
-✨ MLOps Next Steps:
-   1. Model serving setup
-   2. Batch inference pipelines
-   3. Model monitoring implementation
-   4. CI/CD pipeline for model retraining
 """)
