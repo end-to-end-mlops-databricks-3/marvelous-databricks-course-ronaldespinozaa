@@ -13,6 +13,8 @@
 # MAGIC %pip install -e ..
 
 # COMMAND ----------
+# Dont forget to run uv build to create the wheel in the terminal
+# COMMAND ----------
 # Restart the Python kernel to ensure the package is loaded
 # MAGIC %restart_python
 
@@ -170,6 +172,7 @@ print(f"✅ Model registered as: {custom_model.model_name}")
 
 # Predict on the test set
 test_set = custom_model.X_test.iloc[:10]
+print(test_set.head())
 
 # Get predictions using our custom model's prediction method
 predictions = custom_model.load_latest_model_and_predict(test_set)

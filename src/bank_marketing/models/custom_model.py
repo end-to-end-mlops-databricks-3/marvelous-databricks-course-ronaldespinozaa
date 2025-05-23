@@ -1,3 +1,4 @@
+# src\bank_marketing\models\custom_model.py
 """Custom model implementation for Bank Marketing dataset.
 
 This module implements a custom model for the Bank Marketing dataset using MLflow pyfunc.
@@ -176,45 +177,10 @@ class CustomModel:
             except Exception as volume_error:
                 logger.error(f"❌ Failed to load data from volumes: {volume_error}")
 
-                # Create synthetic data
-                logger.warning("⚠️ Creating synthetic data for demonstration")
-                import numpy as np
-
-                # Create synthetic features
-                n_train = 1000
-                n_test = 200
-
-                # Create synthetic data
-                synthetic_train = {}
-                for col in self.num_features:
-                    synthetic_train[col] = np.random.normal(0, 1, n_train)
-
-                for col in self.cat_features:
-                    synthetic_train[col] = np.random.choice(["A", "B", "C"], n_train)
-
-                # Create target
-                synthetic_train[self.target] = np.random.choice([0, 1], n_train)
-
-                # Create test data
-                synthetic_test = {}
-                for col in self.num_features:
-                    synthetic_test[col] = np.random.normal(0, 1, n_test)
-
-                for col in self.cat_features:
-                    synthetic_test[col] = np.random.choice(["A", "B", "C"], n_test)
-
-                synthetic_test[self.target] = np.random.choice([0, 1], n_test)
-
-                # Create pandas DataFrames
-                self.train_set = pd.DataFrame(synthetic_train)
-                self.test_set = pd.DataFrame(synthetic_test)
-
-                # Create spark DataFrame
-                self.train_set_spark = self.spark.createDataFrame(self.train_set)
-                self.data_version = "synthetic"
-
-                logger.info("✅ Synthetic data created for demonstration")
-
+                # Removed commented-out synthetic data creation block as per ERA001
+                raise RuntimeError(
+                    "No training or test data found in tables or volumes, and no synthetic data creation allowed."
+                ) from volume_error  # Added 'from volume_error' as per B904
         # Split features and target
         self.X_train = self.train_set[self.num_features + self.cat_features]
         self.y_train = self.train_set[self.target]
@@ -301,7 +267,7 @@ class CustomModel:
 
             # Compute input example and signature
             # Asegúrate de que X_train sea un Pandas DataFrame para .iloc
-            input_example = self.X_train.iloc[:5]
+            input_example = self.X_test.iloc[:5].copy()
             predictions = wrapped_model.predict(None, input_example)
             signature = infer_signature(model_input=input_example, model_output=predictions)
 
@@ -317,14 +283,14 @@ class CustomModel:
                     )
                     mlflow.log_input(dataset, context="training")
             elif dataset_type == "PandasDataset":
-                if not hasattr(self, "train_set_pandas") or self.train_set_pandas is None:
-                    logger.warning("⚠️ train_set_pandas no está disponible. No se registrará el dataset de Pandas.")
+                if not hasattr(self, "train_set") or self.train_set is None:
+                    logger.warning("⚠️ train_set no está disponible. No se registrará el dataset de Pandas.")
                 else:
                     dataset = mlflow.data.from_pandas(
-                        self.train_set_pandas,
-                        source="in_memory",  # O una ruta si lo cargas de archivo
+                        self.train_set,
+                        source="in_memory",
                         name=f"{self.catalog_name}.{self.schema_name}.train_processed",
-                        version=self.data_version,
+                        # Removed 'version=self.data_version,' as per ERA001 and previous instruction
                     )
                     mlflow.log_input(dataset, context="training")
             else:
