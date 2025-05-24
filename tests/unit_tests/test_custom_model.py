@@ -2,16 +2,17 @@
 
 import mlflow
 import pandas as pd
-from bank_marketingconfig import ProjectConfig, Tags
-from bank_marketingmodels.custom_model import CustomModel
 from conftest import CATALOG_DIR, TRACKING_URI
-from lightgbm import LGBMRegressor
+from lightgbm import LGBMClassifier
 from loguru import logger
 from mlflow.entities.model_registry.registered_model import RegisteredModel
 from mlflow.tracking import MlflowClient
 from pyspark.sql import SparkSession
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+
+from bank_marketing.config import ProjectConfig, Tags
+from bank_marketing.models.custom_model import CustomModel
 
 mlflow.set_tracking_uri(TRACKING_URI)
 
@@ -64,16 +65,24 @@ def test_load_data_validate_splits(mock_custom_model: CustomModel) -> None:
     # Verify feature/target splits
     expected_features = mock_custom_model.num_features + mock_custom_model.cat_features
     pd.testing.assert_frame_equal(mock_custom_model.X_train, train_data[expected_features])
-    pd.testing.assert_series_equal(mock_custom_model.y_train, train_data[mock_custom_model.target])
+    # IMPORTANT: y_train in mock_custom_model.y_train will now be 0s/1s,
+    # while train_data[mock_custom_model.target] might still be 'no'/'yes' unless you mock/process train_data too.
+    # If this test fails after the change, you might need to adjust expected_y_train to be 0s/1s too.
+    # For now, let's assume the focus is on the ValueError.
+    pd.testing.assert_series_equal(
+        mock_custom_model.y_train, train_data[mock_custom_model.target].map({"no": 0, "yes": 1}).astype(int)
+    )
     pd.testing.assert_frame_equal(mock_custom_model.X_test, test_data[expected_features])
-    pd.testing.assert_series_equal(mock_custom_model.y_test, test_data[mock_custom_model.target])
+    pd.testing.assert_series_equal(
+        mock_custom_model.y_test, test_data[mock_custom_model.target].map({"no": 0, "yes": 1}).astype(int)
+    )
 
 
 def test_prepare_features(mock_custom_model: CustomModel) -> None:
     """Test that prepare_features method initializes pipeline components correctly.
 
     Verifies the preprocessor is a ColumnTransformer and pipeline contains expected
-    ColumnTransformer and LGBMRegressor steps in sequence.
+    ColumnTransformer and LGBMRClassifier steps in sequence.
 
     :param mock_custom_model: Mocked CustomModel instance for testing
     """
@@ -83,7 +92,7 @@ def test_prepare_features(mock_custom_model: CustomModel) -> None:
     assert isinstance(mock_custom_model.pipeline, Pipeline)
     assert isinstance(mock_custom_model.pipeline.steps, list)
     assert isinstance(mock_custom_model.pipeline.steps[0][1], ColumnTransformer)
-    assert isinstance(mock_custom_model.pipeline.steps[1][1], LGBMRegressor)
+    assert isinstance(mock_custom_model.pipeline.steps[1][1], LGBMClassifier)
 
 
 def test_train(mock_custom_model: CustomModel) -> None:

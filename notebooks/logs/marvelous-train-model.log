@@ -520,3 +520,51 @@
    2. Model deployment for batch or real-time inference
    3. Model monitoring for data drift
    4. A/B testing with champion/challenger models
+2025-05-24 11:20:04.399 | INFO     | __main__:<module>:24 - ✅ Configuration loaded for environment: mlops_dev.espinoza
+2025-05-24 11:20:04.402 | INFO     | __main__:<module>:25 - 🔗 MLflow tracking URI: databricks://dbc-c2e8445d-159d
+2025-05-24 11:20:04.442 | INFO     | __main__:<module>:4 - ⏱️ Model initialization: Elapsed time: 0.0001 seconds
+2025-05-24 11:20:04.446 | INFO     | bank_marketing.models.basic_model:load_data:57 - 🔄 Loading data from Databricks tables...
+2025-05-24 11:20:16.856 | INFO     | bank_marketing.models.basic_model:load_data:76 - ✅ Data successfully loaded. Train shape: (36168, 16), Test shape: (9043, 16)
+2025-05-24 11:20:16.861 | INFO     | __main__:<module>:9 - ⏱️ Data loading: Elapsed time: 12.4146 seconds
+2025-05-24 11:20:16.861 | INFO     | bank_marketing.models.basic_model:prepare_features:84 - 🔄 Defining preprocessing pipeline...
+2025-05-24 11:20:16.863 | INFO     | bank_marketing.models.basic_model:prepare_features:103 - ✅ Preprocessing pipeline defined.
+2025-05-24 11:20:16.863 | INFO     | __main__:<module>:14 - ⏱️ Feature preparation: Elapsed time: 0.0024 seconds
+2025-05-24 11:20:16.864 | INFO     | bank_marketing.models.basic_model:train:107 - 🚀 Starting training...
+2025-05-24 11:20:17.256 | INFO     | bank_marketing.models.basic_model:train:109 - ✅ Model training completed.
+2025-05-24 11:20:17.258 | INFO     | __main__:<module>:19 - ⏱️ Model training: Elapsed time: 0.3932 seconds
+2025-05-24 11:20:17.311 | INFO     | bank_marketing.models.basic_model:log_model:113 - 📝 Logging model with MLflow...
+2025-05-24 11:20:37.795 | INFO     | bank_marketing.models.basic_model:log_model:130 - 📊 Accuracy: 0.9052
+2025-05-24 11:20:37.797 | INFO     | bank_marketing.models.basic_model:log_model:131 - 📊 Precision: 0.6585
+2025-05-24 11:20:37.798 | INFO     | bank_marketing.models.basic_model:log_model:132 - 📊 Recall: 0.4455
+2025-05-24 11:20:37.799 | INFO     | bank_marketing.models.basic_model:log_model:133 - 📊 F1 Score: 0.5314
+2025-05-24 11:20:37.800 | INFO     | bank_marketing.models.basic_model:log_model:134 - 📊 ROC AUC: 0.9309
+2025-05-24 11:20:56.331 | INFO     | bank_marketing.models.basic_model:log_model:161 - ✅ Model logged with run_id: 180aaaa5b86e436aa86b9c21e6f47985
+2025-05-24 11:20:57.055 | INFO     | __main__:<module>:4 - ⏱️ Model logging: Elapsed time: 39.7442 seconds
+2025-05-24 11:20:57.056 | INFO     | bank_marketing.models.basic_model:register_model:165 - 🔄 Registering the model in Unity Catalog...
+2025-05-24 11:21:06.151 | INFO     | bank_marketing.models.basic_model:register_model:171 - ✅ Model registered as version 4
+2025-05-24 11:21:07.808 | INFO     | __main__:<module>:9 - ⏱️ Model registration: Elapsed time: 10.7520 seconds
+2025-05-24 11:21:08.132 | INFO     | bank_marketing.models.basic_model:retrieve_current_run_metadata:261 - ✅ Run metadata loaded
+2025-05-24 11:21:08.133 | INFO     | __main__:<module>:5 - 📊 Model Performance Metrics:
+2025-05-24 11:21:08.135 | INFO     | __main__:<module>:7 -    - accuracy: 0.9052305650779608
+2025-05-24 11:21:08.136 | INFO     | __main__:<module>:7 -    - f1: 0.5314379442318207
+2025-05-24 11:21:08.138 | INFO     | __main__:<module>:7 -    - precision: 0.6585365853658537
+2025-05-24 11:21:08.139 | INFO     | __main__:<module>:7 -    - recall: 0.4454628780934922
+2025-05-24 11:21:08.141 | INFO     | __main__:<module>:7 -    - roc_auc: 0.9308722984100755
+2025-05-24 11:21:08.142 | INFO     | __main__:<module>:10 - 🔧 Model Parameters:
+2025-05-24 11:21:08.144 | INFO     | __main__:<module>:12 -    - learning_rate: 0.05
+2025-05-24 11:21:08.145 | INFO     | __main__:<module>:12 -    - max_depth: 4
+2025-05-24 11:21:08.146 | INFO     | __main__:<module>:12 -    - model_type: LightGBM with preprocessing
+2025-05-24 11:21:08.146 | INFO     | __main__:<module>:12 -    - n_estimators: 200
+2025-05-24 11:21:08.147 | INFO     | __main__:<module>:12 -    - random_state: 42
+2025-05-24 11:21:08.468 | INFO     | bank_marketing.models.basic_model:retrieve_current_run_dataset:245 - ✅ Dataset metadata loaded
+2025-05-24 11:21:08.469 | INFO     | __main__:<module>:17 - 📚 Dataset info: table=dataset, version=8d6bf53b
+2025-05-24 11:21:08.508 | INFO     | bank_marketing.models.basic_model:load_latest_model_and_predict:274 - 🔄 Loading model from MLflow alias 'latest-model'...
+2025-05-24 11:21:11.887 | INFO     | bank_marketing.models.basic_model:load_latest_model_and_predict:279 - ✅ Model successfully loaded
+2025-05-24 11:21:11.919 | INFO     | __main__:<module>:7 - ⏱️ Prediction time: Elapsed time: 3.4110 seconds
+2025-05-24 11:21:12.020 | INFO     | __main__:<module>:1 -
+✅ MLflow Model Training & Registration Summary:
+   - Model Name: mlops_dev.espinoza.bank_marketing_model
+   - Experiment: /Shared/bank-marketing-basic
+   - Run ID: 180aaaa5b86e436aa86b9c21e6f47985
+   - ROC AUC: 0.9308722984100755
+   - Training samples: 36168
