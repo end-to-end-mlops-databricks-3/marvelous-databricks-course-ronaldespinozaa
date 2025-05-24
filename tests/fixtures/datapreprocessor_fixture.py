@@ -60,24 +60,43 @@ def config() -> ProjectConfig:
 
 @pytest.fixture(scope="function")
 def sample_bank_data(config: ProjectConfig, spark_session: SparkSession) -> pd.DataFrame:
-    """Create a sample DataFrame for bank marketing data.
+    """Create a sample DataFrame from the original data.csv file.
 
-    This fixture reads a CSV file or creates synthetic data for testing the data processor.
+    This fixture loads data.csv and creates a random sample for testing.
 
     :return: A sampled Pandas DataFrame containing bank marketing data.
     """
-    # Intentar cargar desde archivo CSV de prueba
-    file_path = PROJECT_DIR / "tests" / "test_data" / "sample_data.csv"
+    # Ruta al archivo original data.csv
+    original_data_path = PROJECT_DIR / "data" / "data.csv"  # Si está en carpeta data/
+
+    # Rutas para archivos de test
+    file_path = PROJECT_DIR / "tests" / "test_data" / "sample_bank_data.csv"
 
     try:
-        if file_path.exists():
-            logger.info(f"Loading sample data from {file_path}")
-            sample_data = pd.read_csv(file_path.as_posix())
-        else:
-            # Crear datos sintéticos si el archivo no existe
-            logger.info("Sample file not found, creating synthetic bank marketing data")
+        if original_data_path.exists():
+            logger.info(f"Loading original data from {original_data_path}")
 
-            # Crear datos sintéticos para pruebas
+            # Cargar datos originales
+            full_data = pd.read_csv(original_data_path.as_posix())
+            logger.info(f"Original data shape: {full_data.shape}")
+
+            # Crear muestra aleatoria (por ejemplo, 1000 filas o 10% del total)
+            sample_size = min(1000, int(len(full_data) * 0.1))  # Máximo 1000 filas o 10%
+            sample_bank_data = full_data.sample(n=sample_size, random_state=42)
+
+            logger.info(f"Created sample with {len(sample_bank_data)} rows from original {len(full_data)} rows")
+
+            # Guardar muestra para uso futuro
+            test_data_dir = PROJECT_DIR / "tests" / "test_data"
+            test_data_dir.mkdir(parents=True, exist_ok=True)
+            sample_bank_data.to_csv(file_path.as_posix(), index=False)
+            logger.info(f"Saved sample data to {file_path}")
+
+        else:
+            logger.error(f"❌ Original data file not found at {original_data_path}")
+            # Fallback a datos sintéticos si no encuentra el archivo original
+            logger.info("Creating synthetic fallback data...")
+
             data = {
                 "age": [30, 35, 42, 28, 55, 37, 29, 49, 51, 33],
                 "job": [
@@ -150,51 +169,54 @@ def sample_bank_data(config: ProjectConfig, spark_session: SparkSession) -> pd.D
                     "unknown",
                     "success",
                 ],
-                "y": ["no", "yes", "no", "yes", "no", "yes", "no", "yes", "no", "yes"],
+                "Target": ["no", "yes", "no", "yes", "no", "yes", "no", "yes", "no", "yes"],
             }
 
-            sample_data = pd.DataFrame(data)
+            sample_bank_data = pd.DataFrame(data)
 
-            # Guardar datos para uso futuro
+            # Guardar datos sintéticos
             test_data_dir = PROJECT_DIR / "tests" / "test_data"
             test_data_dir.mkdir(parents=True, exist_ok=True)
-            sample_data.to_csv(file_path.as_posix(), index=False)
-            logger.info(f"Created and saved synthetic data to {file_path}")
+            sample_bank_data.to_csv(file_path.as_posix(), index=False)
+            logger.info(f"Created and saved synthetic fallback data to {file_path}")
 
     except Exception as e:
-        logger.error(f"Error creating sample data: {e}")
-        # Crear un DataFrame mínimo en caso de error
-        sample_data = pd.DataFrame(
-            {"age": [30, 40], "job": ["admin", "technician"], "balance": [1000, 2000], "y": ["no", "yes"]}
+        logger.error(f"Error loading data: {e}")
+        # Crear DataFrame mínimo en caso de error
+        sample_bank_data = pd.DataFrame(
+            {
+                "age": [30, 40],
+                "job": ["admin", "technician"],
+                "balance": [1000, 2000],
+                "Target": ["no", "yes"],  # ✅ Usar "y" no "Target"
+            }
         )
 
     # Verificar que todas las columnas configuradas estén presentes
-    # This part can be problematic if config is not loaded correctly.
-    # We will rely on the config fixture to provide a valid config.
     expected_columns = config.num_features + config.cat_features + [config.target]
-    missing_columns = [col for col in expected_columns if col not in sample_data.columns]
+    missing_columns = [col for col in expected_columns if col not in sample_bank_data.columns]
 
     if missing_columns:
         logger.warning(f"Missing columns in sample data: {missing_columns}")
         # Añadir columnas faltantes con valores predeterminados
         for col in missing_columns:
             if col in config.num_features:
-                sample_data[col] = 0
+                sample_bank_data[col] = 0
             elif col in config.cat_features:
-                sample_data[col] = "unknown"
+                sample_bank_data[col] = "unknown"
             elif col == config.target:
-                sample_data[col] = "no"
+                sample_bank_data[col] = "no"
 
     # Dividir el DataFrame en conjunto de entrenamiento (80%) y test (20%)
     try:
-        train_df = sample_data.sample(frac=0.8, random_state=42)
-        test_df = sample_data.drop(train_df.index)
+        train_df = sample_bank_data.sample(frac=0.8, random_state=42)
+        test_df = sample_bank_data.drop(train_df.index)
 
         train_path = PROJECT_DIR / "tests" / "catalog" / "train_set.csv"
         test_path = PROJECT_DIR / "tests" / "catalog" / "test_set.csv"
 
-        train_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure catalog directory exists
-        test_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure catalog directory exists
+        train_path.parent.mkdir(parents=True, exist_ok=True)
+        test_path.parent.mkdir(parents=True, exist_ok=True)
 
         train_df.to_csv(train_path.as_posix(), index=False)
         test_df.to_csv(test_path.as_posix(), index=False)
@@ -203,7 +225,7 @@ def sample_bank_data(config: ProjectConfig, spark_session: SparkSession) -> pd.D
     except Exception as split_error:
         logger.error(f"Failed to split and save train/test sets: {split_error}")
 
-    return sample_data
+    return sample_bank_data
 
 
 @pytest.fixture(scope="session")

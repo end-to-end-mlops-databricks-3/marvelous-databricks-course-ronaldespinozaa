@@ -1,9 +1,0 @@
-job,marital,education,default,housing,loan,contact,month,poutcome,age,balance,day,duration,campaign,pdays,previous,Target
-admin,single,tertiary,no,yes,yes,telephone,jun,success,37,1500,12,150,4,8,2,1
-admin,married,secondary,no,yes,no,cellular,jan,missing,30,1000,10,120,2,999,0,0
-blue-collar,married,secondary,yes,no,yes,telephone,aug,failure,49,2000,18,270,3,12,4,1
-management,divorced,tertiary,no,yes,no,cellular,mar,missing,42,3000,20,180,3,999,0,0
-technician,divorced,primary,no,yes,no,telephone,oct,success,33,950,30,200,5,15,1,1
-retired,married,secondary,yes,no,no,cellular,may,missing,55,5000,25,90,1,999,0,0
-technician,married,secondary,no,yes,no,telephone,apr,failure,28,800,5,240,2,5,3,1
-services,divorced,primary,no,no,no,cellular,jul,missing,29,700,8,210,2,999,0,0

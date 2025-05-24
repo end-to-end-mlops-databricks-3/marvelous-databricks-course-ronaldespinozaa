@@ -181,7 +181,7 @@ class CustomModel:
                 ) from volume_error
 
         # 🔥 FIX: Convert string targets to binary BEFORE splitting features
-        target_col = self.target
+        target_col = self.target  # Esto será "Target"
         if target_col in self.train_set.columns and self.train_set[target_col].dtype == "object":
             logger.info(f"🔄 Converting target '{target_col}' from string to binary...")
             self.train_set[target_col] = (self.train_set[target_col] == "yes").astype(int)
