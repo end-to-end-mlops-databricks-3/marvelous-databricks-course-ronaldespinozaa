@@ -223,4 +223,5 @@ def test_load_latest_model_and_predict(mock_custom_model: CustomModel) -> None:
 
     first_row = input_data.iloc[:1]
     predictions = mock_custom_model.load_latest_model_and_predict(input_data=first_row)
-    assert len(predictions) == 1
+
+    assert len(predictions["predictions"]) == 1  # Test the predictions array, not the dict
