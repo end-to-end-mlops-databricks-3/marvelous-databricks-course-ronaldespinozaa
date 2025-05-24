@@ -150,7 +150,7 @@ def sample_bank_data(config: ProjectConfig, spark_session: SparkSession) -> pd.D
                     "unknown",
                     "success",
                 ],
-                "Target": ["no", "yes", "no", "yes", "no", "yes", "no", "yes", "no", "yes"],
+                "y": ["no", "yes", "no", "yes", "no", "yes", "no", "yes", "no", "yes"],
             }
 
             sample_data = pd.DataFrame(data)
@@ -165,7 +165,7 @@ def sample_bank_data(config: ProjectConfig, spark_session: SparkSession) -> pd.D
         logger.error(f"Error creating sample data: {e}")
         # Crear un DataFrame mínimo en caso de error
         sample_data = pd.DataFrame(
-            {"age": [30, 40], "job": ["admin", "technician"], "balance": [1000, 2000], "Target": ["no", "yes"]}
+            {"age": [30, 40], "job": ["admin", "technician"], "balance": [1000, 2000], "y": ["no", "yes"]}
         )
 
     # Verificar que todas las columnas configuradas estén presentes

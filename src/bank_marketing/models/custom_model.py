@@ -176,18 +176,26 @@ class CustomModel:
                 logger.info("✅ Data loaded from volumes")
             except Exception as volume_error:
                 logger.error(f"❌ Failed to load data from volumes: {volume_error}")
-
-                # Removed commented-out synthetic data creation block as per ERA001
                 raise RuntimeError(
                     "No training or test data found in tables or volumes, and no synthetic data creation allowed."
-                ) from volume_error  # Added 'from volume_error' as per B904
-        # Split features and target
+                ) from volume_error
+
+        # 🔥 FIX: Convert string targets to binary BEFORE splitting features
+        target_col = self.target
+        if target_col in self.train_set.columns and self.train_set[target_col].dtype == "object":
+            logger.info(f"🔄 Converting target '{target_col}' from string to binary...")
+            self.train_set[target_col] = (self.train_set[target_col] == "yes").astype(int)
+            self.test_set[target_col] = (self.test_set[target_col] == "yes").astype(int)
+            logger.info("✅ Target conversion completed")
+
+        # Split features and target AFTER conversion
         self.X_train = self.train_set[self.num_features + self.cat_features]
         self.y_train = self.train_set[self.target]
         self.X_test = self.test_set[self.num_features + self.cat_features]
         self.y_test = self.test_set[self.target]
 
         logger.info(f"📊 Train shape: {self.X_train.shape}, Test shape: {self.X_test.shape}")
+        logger.info(f"📊 Target distribution - Train: {self.y_train.value_counts().to_dict()}")
 
     def prepare_features(self) -> None:
         """Encode categorical features and define a preprocessing pipeline.
@@ -237,14 +245,14 @@ class CustomModel:
 
             # Make predictions
             # Asumo que X_test es un Pandas DataFrame o similar para predict
-            y_pred = self.pipeline.predict(self.X_test)
-            y_pred_proba = self.pipeline.predict_proba(self.X_test)[:, 1]
+            y_pred = self.pipeline.predict(self.X_test)  # ✅ Correcto: usa self.pipeline
+            y_pred_proba = self.pipeline.predict_proba(self.X_test)[:, 1]  # ✅ Correcto: usa self.pipeline
 
             # Evaluate metrics
             accuracy = accuracy_score(self.y_test, y_pred)
-            precision = precision_score(self.y_test, y_pred)
-            recall = recall_score(self.y_test, y_pred)
-            f1 = f1_score(self.y_test, y_pred)
+            precision = precision_score(self.y_test, y_pred)  # ✅ Sin pos_label porque y_test ya es binario
+            recall = recall_score(self.y_test, y_pred)  # ✅ Sin pos_label porque y_test ya es binario
+            f1 = f1_score(self.y_test, y_pred)  # ✅ Sin pos_label porque y_test ya es binario
             roc_auc = roc_auc_score(self.y_test, y_pred_proba)
 
             logger.info(f"📊 Accuracy: {accuracy:.4f}")
@@ -328,7 +336,7 @@ class CustomModel:
         client = MlflowClient()
         client.set_registered_model_alias(
             name=self.model_name,
-            alias="custom-model",
+            alias="latest-model",  # ✅ Para que coincida con el test
             version=latest_version,
         )
 
@@ -423,14 +431,12 @@ class CustomModel:
             Dictionary with predictions and additional metadata.
 
         """
-        logger.info("🔄 Loading model from MLflow alias 'custom-model'...")
+        logger.info("🔄 Loading model from MLflow alias 'latest-model'...")
 
-        model_uri = f"models:/{self.model_name}@custom-model"
+        # 🔥 CAMBIAR ESTA LÍNEA:
+        model_uri = f"models:/{self.model_name}@latest-model"  # Cambiar custom-model por latest-model
         model = mlflow.pyfunc.load_model(model_uri)
 
         logger.info("✅ Model successfully loaded")
-
-        # Make predictions using the custom format defined in the wrapper
         predictions = model.predict(input_data)
-
         return predictions

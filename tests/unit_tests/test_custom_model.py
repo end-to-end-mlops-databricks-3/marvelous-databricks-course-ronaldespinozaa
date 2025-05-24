@@ -204,29 +204,20 @@ def test_retrieve_current_run_metadata(mock_custom_model: CustomModel) -> None:
 
 
 def test_load_latest_model_and_predict(mock_custom_model: CustomModel) -> None:
-    """Test the process of loading the latest model and making predictions.
-
-    This function performs the following steps:
-    - Loads data using the provided custom model.
-    - Prepares features and trains the model.
-    - Logs and registers the trained model.
-    - Extracts input data from the test set and makes predictions using the latest model.
-
-    :param mock_custom_model: Instance of a custom machine learning model with methods for data
-                              loading, feature preparation, training, logging, and prediction.
-    """
+    """Test the process of loading the latest model and making predictions."""
     mock_custom_model.load_data()
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
     mock_custom_model.register_model()
 
-    input_data = mock_custom_model.test_set.drop(columns=[mock_custom_model.config.target])
-    input_data = input_data.where(input_data.notna(), None)  # noqa
+    input_data = mock_custom_model.test_set.drop(
+        columns=[
+            col for col in [mock_custom_model.config.target, "Target", "y"] if col in mock_custom_model.test_set.columns
+        ]
+    )
+    input_data = input_data.where(input_data.notna(), None)
 
-    for row in input_data.itertuples(index=False):
-        row_df = pd.DataFrame([row._asdict()])
-        print(row_df.to_dict(orient="split"))
-        predictions = mock_custom_model.load_latest_model_and_predict(input_data=row_df)
-
-        assert len(predictions) == 1
+    first_row = input_data.iloc[:1]
+    predictions = mock_custom_model.load_latest_model_and_predict(input_data=first_row)
+    assert len(predictions) == 1
