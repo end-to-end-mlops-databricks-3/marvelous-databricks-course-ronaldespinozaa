@@ -1,9 +1,9 @@
+from typing import Any
 
 from databricks.sdk.runtime import dbutils
-from pyspark.sql.session import SparkSession
-from pyspark.sql.functions import udf as U
 from pyspark.sql.context import SQLContext
-from typing import Any
+from pyspark.sql.functions import udf as U
+from pyspark.sql.session import SparkSession
 
 udf = U
 spark: SparkSession
@@ -18,6 +18,3 @@ def displayHTML(html: str) -> None:
 
 def display(input: Any = None, *args: Any, **kwargs: Any) -> None:
     pass  # Indica que la función no hace nada por el momento
-
-
-

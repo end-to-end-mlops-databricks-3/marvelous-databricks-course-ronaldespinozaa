@@ -1,98 +1,180 @@
-"""Fixtures for BasicModel unit tests."""  # FIX: Added module docstring
+"""Unit tests for DataProcessor."""
 
-from unittest.mock import MagicMock
-
-import numpy as np
 import pandas as pd
 import pytest
+from conftest import CATALOG_DIR
+from delta.tables import DeltaTable
 from pyspark.sql import SparkSession
 
-from bank_marketing.config import ProjectConfig, Tags
-from bank_marketing.models.basic_model import BasicModel
+from bank_marketing.config import ProjectConfig
+from bank_marketing.data_processor import DataProcessor
 
 
-@pytest.fixture
-def mock_basic_model(config: ProjectConfig, tags: Tags, spark_session: SparkSession) -> BasicModel:
-    """Fixture that provides a BasicModel instance with mocked Spark interactions.
+def test_data_ingestion(sample_data: pd.DataFrame) -> None:
+    """Test the data ingestion process by checking the shape of the sample data.
 
-    Dynamically generates dummy data based on the ProjectConfig's features
-    to ensure consistency and avoid KeyErrors.
+    Asserts that the sample data has at least one row and one column.
+
+    :param sample_data: The sample data to be tested
     """
-    # Create a BasicModel instance
-    model = BasicModel(config=config, tags=tags, spark=spark_session)
+    assert sample_data.shape[0] > 0
+    assert sample_data.shape[1] > 0
 
-    # --- Dynamically create dummy pandas DataFrames based on config features ---
-    num_rows_train = 10
-    num_rows_test = 5
 
-    # Define a common set of categories that might be expected in bank marketing data
-    # This ensures consistency even if not all are in config.cat_features
-    common_categories = {
-        "job": ["admin.", "blue-collar", "management", "technician", "services", "retired", "unknown"],
-        "marital": ["married", "single", "divorced"],
-        "education": ["secondary", "tertiary", "primary", "unknown"],
-        "default": ["no", "yes"],
-        "housing": ["no", "yes"],
-        "loan": ["no", "yes"],
-        "contact": ["cellular", "telephone", "unknown"],
-        "month": ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"],
-        "poutcome": ["unknown", "success", "failure", "other"],
-        # Add other categorical features and their possible values as needed
-    }
+def test_dataprocessor_init(
+    sample_data: pd.DataFrame,
+    config: ProjectConfig,
+    spark_session: SparkSession,
+) -> None:
+    """Test the initialization of DataProcessor.
 
-    dummy_train_data = {}
-    for col in model.num_features:
-        dummy_train_data[col] = np.random.rand(num_rows_train) * 1000  # Example numeric data
-    for col in model.cat_features:
-        # Use common_categories if available, otherwise default to generic ones
-        categories_for_col = common_categories.get(col, ["cat_A", "cat_B", "cat_C", "unknown"])
-        dummy_train_data[col] = np.random.choice(categories_for_col, num_rows_train)
+    :param sample_data: Sample DataFrame for testing
+    :param config: Configuration object for the project
+    :param spark: SparkSession object
+    """
+    processor = DataProcessor(pandas_df=sample_data, config=config, spark=spark_session)
+    assert isinstance(processor.df, pd.DataFrame)
+    assert processor.df.equals(sample_data)
 
-    # Ensure target column is present and numeric (0/1) for training
-    dummy_train_data[model.target] = np.random.choice([0, 1], num_rows_train)
-    dummy_train_df = pd.DataFrame(dummy_train_data)
+    assert isinstance(processor.config, ProjectConfig)
+    assert isinstance(processor.spark, SparkSession)
 
-    dummy_test_data = {}
-    for col in model.num_features:
-        dummy_test_data[col] = np.random.rand(num_rows_test) * 1000
-    for col in model.cat_features:
-        categories_for_col = common_categories.get(col, ["cat_A", "cat_B", "cat_C", "unknown"])
-        dummy_test_data[col] = np.random.choice(categories_for_col, num_rows_test)
 
-    # FIX: Make dummy_test_data[model.target] deterministic for consistent metric calculation
-    dummy_test_data[model.target] = np.array([0, 1, 0, 1, 0])[:num_rows_test]  # Explicitly set for 5 rows
-    dummy_test_df = pd.DataFrame(dummy_test_data)
+def test_column_transformations(sample_data: pd.DataFrame, config: ProjectConfig, spark_session: SparkSession) -> None:
+    """Test column transformations performed by the DataProcessor.
 
-    # --- End dynamic dummy data creation ---
+    This function checks if specific column transformations are applied correctly,
+    such as removing the GarageYrBlt column and changing data types of Id and MasVnrType.
 
-    # Mock toPandas() method for Spark DataFrames
-    mock_spark_df_train = MagicMock()
-    mock_spark_df_train.toPandas.return_value = dummy_train_df
-    mock_spark_df_test = MagicMock()
-    mock_spark_df_test.toPandas.return_value = dummy_test_df
+    :param sample_data: Input DataFrame containing sample data
+    :param config: Configuration object for the project
+    :param spark: SparkSession object
+    """
+    processor = DataProcessor(pandas_df=sample_data, config=config, spark=spark_session)
+    processor.preprocess()
 
-    # Mock spark.table method to return the mocked Spark DataFrames
-    mock_spark = MagicMock(spec=SparkSession)
-    mock_spark.table.side_effect = [mock_spark_df_train, mock_spark_df_test]
+    assert "GarageYrBlt" not in processor.df.columns
+    assert processor.df["Id"].dtype == "object"
+    assert processor.df["MasVnrType"].dtype == "category"
 
-    # Mock spark.sql().collect() for data_version retrieval
-    mock_spark.sql.return_value.collect.return_value = [{"version": "123"}]
 
-    # Assign the mocked spark session to the model instance
-    model.spark = mock_spark
+def test_missing_value_handling(sample_data: pd.DataFrame, config: ProjectConfig, spark_session: SparkSession) -> None:
+    """Test missing value handling in the DataProcessor.
 
-    # Manually set attributes needed for prepare_features, train, etc.
-    # These are derived from the dynamically created dummy_train_df/dummy_test_df
-    model.train_set = dummy_train_df
-    model.test_set = dummy_test_df
-    model.X_train = dummy_train_df[model.num_features + model.cat_features]
-    model.y_train = dummy_train_df[model.target]
-    model.X_test = dummy_test_df[model.num_features + model.cat_features]
-    model.y_test = dummy_test_df[model.target]
+    This function verifies that missing values are handled correctly for
+    LotFrontage, MasVnrType, and MasVnrArea columns.
 
-    # FIX: Add Spark DataFrame mocks and data_version as log_model expects them
-    model.train_set_spark = MagicMock()
-    model.test_set_spark = MagicMock()
-    model.data_version = "test_version_from_fixture"  # Assign a dummy version
+    :param sample_data: Input DataFrame containing sample data
+    :param config: Configuration object for the project
+    :param spark: SparkSession object
+    """
+    processor = DataProcessor(pandas_df=sample_data, config=config, spark=spark_session)
+    processor.preprocess()
 
-    yield model
+    assert processor.df["LotFrontage"].isna().sum() == 0
+    assert (processor.df["MasVnrType"] == "None").sum() > 0
+    assert (processor.df["MasVnrArea"] == 0).sum() > 0
+
+
+def test_column_selection(sample_data: pd.DataFrame, config: ProjectConfig, spark_session: SparkSession) -> None:
+    """Test column selection in the DataProcessor.
+
+    This function checks if the correct columns are selected and present in the
+    processed DataFrame based on the configuration.
+
+    :param sample_data: Input DataFrame containing sample data
+    :param config: Configuration object for the project
+    :param spark: SparkSession object
+    """
+    processor = DataProcessor(pandas_df=sample_data, config=config, spark=spark_session)
+    processor.preprocess()
+
+    expected_columns = config.cat_features + config.num_features + [config.target, "Id"]
+    assert set(processor.df.columns) == set(expected_columns)
+
+
+def test_split_data_default_params(
+    sample_data: pd.DataFrame, config: ProjectConfig, spark_session: SparkSession
+) -> None:
+    """Test the default parameters of the split_data method in DataProcessor.
+
+    This function tests if the split_data method correctly splits the input DataFrame
+    into train and test sets using default parameters.
+
+    :param sample_data: Input DataFrame to be split
+    :param config: Configuration object for the project
+    :param spark: SparkSession object
+    """
+    processor = DataProcessor(pandas_df=sample_data, config=config, spark=spark_session)
+    processor.preprocess()
+    train, test = processor.split_data()
+
+    assert isinstance(train, pd.DataFrame)
+    assert isinstance(test, pd.DataFrame)
+    assert len(train) + len(test) == len(processor.df)
+    assert set(train.columns) == set(test.columns) == set(processor.df.columns)
+
+    # # The following lines are just to mimick the behavior of delta tables in UC
+    # # Just one time execution in order for all other tests to work
+    train.to_csv((CATALOG_DIR / "train_set.csv").as_posix(), index=False)  # noqa
+    test.to_csv((CATALOG_DIR / "test_set.csv").as_posix(), index=False)  # noqa
+
+
+def test_preprocess_empty_dataframe(config: ProjectConfig, spark_session: SparkSession) -> None:
+    """Test the preprocess method with an empty DataFrame.
+
+    This function tests if the preprocess method correctly handles an empty DataFrame
+    and raises KeyError.
+
+    :param config: Configuration object for the project
+    :param spark: SparkSession object
+    :raises KeyError: If the preprocess method handles empty DataFrame correctly
+    """
+    processor = DataProcessor(pandas_df=pd.DataFrame([]), config=config, spark=spark_session)
+    with pytest.raises(KeyError):
+        processor.preprocess()
+
+
+@pytest.mark.skip(reason="depends on delta tables on Databricks")
+def test_save_to_catalog_succesfull(
+    sample_data: pd.DataFrame, config: ProjectConfig, spark_session: SparkSession
+) -> None:
+    """Test the successful saving of data to the catalog.
+
+    This function processes sample data, splits it into train and test sets, and saves them to the catalog.
+    It then asserts that the saved tables exist in the catalog.
+
+    :param sample_data: The sample data to be processed and saved
+    :param config: Configuration object for the project
+    :param spark: SparkSession object for interacting with Spark
+    """
+    processor = DataProcessor(pandas_df=sample_data, config=config, spark=spark_session)
+    processor.preprocess()
+    train_set, test_set = processor.split_data()
+    processor.save_to_catalog(train_set, test_set)
+    processor.enable_change_data_feed()
+
+    # Assert
+    assert spark_session.catalog.tableExists(f"{config.catalog_name}.{config.schema_name}.train_set")
+    assert spark_session.catalog.tableExists(f"{config.catalog_name}.{config.schema_name}.test_set")
+
+
+@pytest.mark.skip(reason="depends on delta tables on Databrics")
+@pytest.mark.order(after=test_save_to_catalog_succesfull)
+def test_delta_table_property_of_enableChangeDataFeed_check(config: ProjectConfig, spark_session: SparkSession) -> None:
+    """Check if Change Data Feed is enabled for train and test sets.
+
+    Verifies that the 'delta.enableChangeDataFeed' property is set to True for both
+    the train and test set Delta tables.
+
+    :param config: Project configuration object
+    :param spark: SparkSession object
+    """
+    train_set_path = f"{config.catalog_name}.{config.schema_name}.train_set"
+    test_set_path = f"{config.catalog_name}.{config.schema_name}.test_set"
+    tables = [train_set_path, test_set_path]
+    for table in tables:
+        delta_table = DeltaTable.forName(spark_session, table)
+        properties = delta_table.detail().select("properties").collect()[0][0]
+        cdf_enabled = properties.get("delta.enableChangeDataFeed")
+        assert bool(cdf_enabled) is True

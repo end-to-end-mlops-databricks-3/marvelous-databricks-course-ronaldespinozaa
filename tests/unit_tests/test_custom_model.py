@@ -2,17 +2,16 @@
 
 import mlflow
 import pandas as pd
+from bank_marketingconfig import ProjectConfig, Tags
+from bank_marketingmodels.custom_model import CustomModel
 from conftest import CATALOG_DIR, TRACKING_URI
-from lightgbm import LGBMClassifier  # Changed from LGBMRegressor
+from lightgbm import LGBMRegressor
 from loguru import logger
 from mlflow.entities.model_registry.registered_model import RegisteredModel
 from mlflow.tracking import MlflowClient
 from pyspark.sql import SparkSession
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-
-from bank_marketing.config import ProjectConfig, Tags
-from bank_marketing.models.custom_model import CustomModel
 
 mlflow.set_tracking_uri(TRACKING_URI)
 
@@ -74,7 +73,7 @@ def test_prepare_features(mock_custom_model: CustomModel) -> None:
     """Test that prepare_features method initializes pipeline components correctly.
 
     Verifies the preprocessor is a ColumnTransformer and pipeline contains expected
-    ColumnTransformer and LGBMClassifier steps in sequence.
+    ColumnTransformer and LGBMRegressor steps in sequence.
 
     :param mock_custom_model: Mocked CustomModel instance for testing
     """
@@ -84,7 +83,7 @@ def test_prepare_features(mock_custom_model: CustomModel) -> None:
     assert isinstance(mock_custom_model.pipeline, Pipeline)
     assert isinstance(mock_custom_model.pipeline.steps, list)
     assert isinstance(mock_custom_model.pipeline.steps[0][1], ColumnTransformer)
-    assert isinstance(mock_custom_model.pipeline.steps[1][1], LGBMClassifier)  # Changed from LGBMRegressor
+    assert isinstance(mock_custom_model.pipeline.steps[1][1], LGBMRegressor)
 
 
 def test_train(mock_custom_model: CustomModel) -> None:
@@ -96,10 +95,6 @@ def test_train(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: Mocked CustomModel instance for testing
     """
     mock_custom_model.load_data()
-    # --- NEW: Ensure y_train is numeric (0 or 1) for training ---
-    if mock_custom_model.y_train.dtype == "object":
-        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
-    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     expected_feature_names = mock_custom_model.config.num_features + mock_custom_model.config.cat_features
@@ -117,12 +112,6 @@ def test_log_model_with_PandasDataset(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: Mocked CustomModel instance for testing
     """
     mock_custom_model.load_data()
-    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
-    if mock_custom_model.y_train.dtype == "object":
-        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
-    if mock_custom_model.y_test.dtype == "object":
-        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
-    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     expected_feature_names = mock_custom_model.config.num_features + mock_custom_model.config.cat_features
@@ -160,12 +149,6 @@ def test_register_model(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: A mocked instance of the CustomModel class.
     """
     mock_custom_model.load_data()
-    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
-    if mock_custom_model.y_train.dtype == "object":
-        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
-    if mock_custom_model.y_test.dtype == "object":
-        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
-    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
@@ -188,8 +171,7 @@ def test_register_model(mock_custom_model: CustomModel) -> None:
 
     assert isinstance(model, RegisteredModel)
     alias, version = model.aliases.popitem()
-    # FIX: Assert that the alias is 'custom-model', not 'latest-model'
-    assert alias == "custom-model"  # Changed from "latest-model"
+    assert alias == "latest-model"
 
 
 def test_retrieve_current_run_metadata(mock_custom_model: CustomModel) -> None:
@@ -201,12 +183,6 @@ def test_retrieve_current_run_metadata(mock_custom_model: CustomModel) -> None:
     :param mock_custom_model: A mocked instance of the CustomModel class.
     """
     mock_custom_model.load_data()
-    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
-    if mock_custom_model.y_train.dtype == "object":
-        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
-    if mock_custom_model.y_test.dtype == "object":
-        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
-    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
@@ -228,15 +204,9 @@ def test_load_latest_model_and_predict(mock_custom_model: CustomModel) -> None:
     - Extracts input data from the test set and makes predictions using the latest model.
 
     :param mock_custom_model: Instance of a custom machine learning model with methods for data
-      loading, feature preparation, training, logging, and prediction.
+                              loading, feature preparation, training, logging, and prediction.
     """
     mock_custom_model.load_data()
-    # --- NEW: Ensure y_train and y_test are numeric (0 or 1) for this test ---
-    if mock_custom_model.y_train.dtype == "object":
-        mock_custom_model.y_train = mock_custom_model.y_train.map({"yes": 1, "no": 0}).astype(int)
-    if mock_custom_model.y_test.dtype == "object":
-        mock_custom_model.y_test = mock_custom_model.y_test.map({"yes": 1, "no": 0}).astype(int)
-    # --- END NEW ---
     mock_custom_model.prepare_features()
     mock_custom_model.train()
     mock_custom_model.log_model(dataset_type="PandasDataset")
@@ -248,6 +218,6 @@ def test_load_latest_model_and_predict(mock_custom_model: CustomModel) -> None:
     for row in input_data.itertuples(index=False):
         row_df = pd.DataFrame([row._asdict()])
         print(row_df.to_dict(orient="split"))
-        predictions_dict = mock_custom_model.load_latest_model_and_predict(input_data=row_df)
-        # FIX: Access the 'predictions' list from the returned dictionary
-        assert len(predictions_dict["predictions"]) == 1
+        predictions = mock_custom_model.load_latest_model_and_predict(input_data=row_df)
+
+        assert len(predictions) == 1
