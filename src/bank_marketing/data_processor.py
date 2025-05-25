@@ -1,5 +1,4 @@
-"""
-This class, `DataProcessor`, is designed to preprocess, split, and store the Bank Marketing dataset.
+"""Preprocessing, split, and store the Bank Marketing dataset.
 
 It handles various data cleaning and transformation steps, prepares the data for machine learning,
 and provides functionalities to save the processed data to both Unity Catalog tables and Databricks Volumes.
@@ -36,15 +35,16 @@ Methods:
     - enable_volume_change_data_feed(self) -> None:
         Enables Delta Lake Change Data Feed (CDF) on all the Delta tables saved within the Databricks Volume
         ('raw/train', 'raw/test', 'processed/train', 'processed/test').
+
 """
 
 import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
 from sklearn.model_selection import train_test_split
-from infrastructure.volume_manager import VolumeManager
 
 from bank_marketing.config import ProjectConfig
+from infrastructure.volume_manager import VolumeManager
 
 
 class DataProcessor:
@@ -113,7 +113,6 @@ class DataProcessor:
         # Keep only the desired columns
         self.df = self.df[features]
 
-
     def split_data(self, test_size: float = 0.2, random_state: int = 42) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Split the data into training and testing sets."""
         train_df, test_df = train_test_split(self.df, test_size=test_size, random_state=random_state)
@@ -139,10 +138,6 @@ class DataProcessor:
             "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
         )
 
-        # Delete existing raw tables
-        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.train_raw")
-        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.test_raw")
-
         # Save raw version
         train_raw_sdf.write.mode("overwrite").saveAsTable(
             f"{self.config.catalog_name}.{self.config.schema_name}.train_raw"
@@ -150,11 +145,6 @@ class DataProcessor:
         test_raw_sdf.write.mode("overwrite").saveAsTable(
             f"{self.config.catalog_name}.{self.config.schema_name}.test_raw"
         )
-
-        # 2. Save PROCESSED version (target as numeric) for training
-        # Delete existing processed tables
-        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.train_processed")
-        # self.spark.sql(f"DROP TABLE IF EXISTS {self.config.catalog_name}.{self.config.schema_name}.test_processed")
 
         # Create Spark DataFrames for processed data
         train_processed_sdf = self.spark.createDataFrame(train_df).withColumn(
@@ -172,9 +162,11 @@ class DataProcessor:
             f"{self.config.catalog_name}.{self.config.schema_name}.test_processed"
         )
 
-        print(f"Data saved in Unity Catalog:")
+        print("Data saved in Unity Catalog:")
         print(f"  - Raw data (target as string): {self.config.catalog_name}.{self.config.schema_name}.train_raw")
-        print(f"  - Processed data (numeric target): {self.config.catalog_name}.{self.config.schema_name}.train_processed")
+        print(
+            f"  - Processed data (numeric target): {self.config.catalog_name}.{self.config.schema_name}.train_processed"
+        )
 
     def enable_change_data_feed(self) -> None:
         """Enable Delta Lake Change Data Feed on all catalog tables."""
@@ -200,7 +192,6 @@ class DataProcessor:
 
     def save_to_volume(self, train_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
         """Save data to volumes in both raw (string target) and processed (numeric target) formats."""
-
         # Initialize volume
         volume_manager = VolumeManager(self.spark, self.config)
         volume_manager.ensure_volume_exists()
@@ -222,26 +213,16 @@ class DataProcessor:
         test_raw_sdf = self.spark.createDataFrame(test_raw)
 
         # Add timestamp
-        train_raw_sdf = train_raw_sdf.withColumn(
-            "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
-        )
-        test_raw_sdf = test_raw_sdf.withColumn(
-            "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
-        )
+        train_raw_sdf = train_raw_sdf.withColumn("update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC"))
+        test_raw_sdf = test_raw_sdf.withColumn("update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC"))
 
         # Save raw version WITH overwriteSchema option
         raw_train_path = volume_manager.get_path("raw", "train")
         raw_test_path = volume_manager.get_path("raw", "test")
 
-        train_raw_sdf.write.format("delta")\
-            .option("overwriteSchema", "true")\
-            .mode("overwrite")\
-            .save(raw_train_path)
+        train_raw_sdf.write.format("delta").option("overwriteSchema", "true").mode("overwrite").save(raw_train_path)
 
-        test_raw_sdf.write.format("delta")\
-            .option("overwriteSchema", "true")\
-            .mode("overwrite")\
-            .save(raw_test_path)
+        test_raw_sdf.write.format("delta").option("overwriteSchema", "true").mode("overwrite").save(raw_test_path)
 
         # 2. Save processed version (with numeric target)
         train_processed_sdf = self.spark.createDataFrame(train_df).withColumn(
@@ -255,15 +236,13 @@ class DataProcessor:
         processed_train_path = volume_manager.get_path("processed", "train")
         processed_test_path = volume_manager.get_path("processed", "test")
 
-        train_processed_sdf.write.format("delta")\
-            .option("overwriteSchema", "true")\
-            .mode("overwrite")\
-            .save(processed_train_path)
+        train_processed_sdf.write.format("delta").option("overwriteSchema", "true").mode("overwrite").save(
+            processed_train_path
+        )
 
-        test_processed_sdf.write.format("delta")\
-            .option("overwriteSchema", "true")\
-            .mode("overwrite")\
-            .save(processed_test_path)
+        test_processed_sdf.write.format("delta").option("overwriteSchema", "true").mode("overwrite").save(
+            processed_test_path
+        )
 
         print(f"Data saved to volume: {volume_manager.volume_path}")
         print(f"  - Raw data: {volume_manager.get_path('raw')}")
@@ -271,7 +250,6 @@ class DataProcessor:
 
     def enable_volume_change_data_feed(self) -> None:
         """Enable Delta Lake Change Data Feed on the saved volume tables."""
-
         volume_manager = VolumeManager(self.spark, self.config)
 
         # Get paths for the data
