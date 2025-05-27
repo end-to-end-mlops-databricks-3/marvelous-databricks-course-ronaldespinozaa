@@ -1,0 +1,15 @@
+aliases:
+- latest-model
+creation_timestamp: 1747905674070
+current_stage: None
+description: 'Model trained with 36168 samples. ROC AUC: 0.9309'
+last_updated_timestamp: 1747905674465
+name: mlops_dev.espinoza.bank_marketing_model
+run_id: 3a49bf44d4c14d2282eb27aaf5e35b3c
+run_link: null
+source: file:///c:/Users/ronal/Documentos/Bootcamp_Data_Science/mlops_databricks/marvelous-databricks-course-ronaldespinozaa/notebooks/mlruns/209841541831830648/3a49bf44d4c14d2282eb27aaf5e35b3c/artifacts/lightgbm-pipeline-model
+status: READY
+status_message: null
+storage_location: file:///c:/Users/ronal/Documentos/Bootcamp_Data_Science/mlops_databricks/marvelous-databricks-course-ronaldespinozaa/notebooks/mlruns/209841541831830648/3a49bf44d4c14d2282eb27aaf5e35b3c/artifacts/lightgbm-pipeline-model
+user_id: null
+version: 4

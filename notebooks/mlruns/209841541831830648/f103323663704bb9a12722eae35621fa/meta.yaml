@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/ronal/Documentos/Bootcamp_Data_Science/mlops_databricks/marvelous-databricks-course-ronaldespinozaa/notebooks/mlruns/209841541831830648/f103323663704bb9a12722eae35621fa/artifacts
+end_time: 1747858515833
+entry_point_name: ''
+experiment_id: '209841541831830648'
+lifecycle_stage: active
+run_id: f103323663704bb9a12722eae35621fa
+run_name: thundering-jay-627
+run_uuid: f103323663704bb9a12722eae35621fa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747858500429
+status: 3
+tags: []
+user_id: ronal

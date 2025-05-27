@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/ronal/Documentos/Bootcamp_Data_Science/mlops_databricks/marvelous-databricks-course-ronaldespinozaa/notebooks/mlruns/209841541831830648/9a8b130b88404b6b95b793e46c5b1ebd/artifacts
+end_time: 1747833605041
+entry_point_name: ''
+experiment_id: '209841541831830648'
+lifecycle_stage: active
+run_id: 9a8b130b88404b6b95b793e46c5b1ebd
+run_name: useful-sponge-273
+run_uuid: 9a8b130b88404b6b95b793e46c5b1ebd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747833588310
+status: 3
+tags: []
+user_id: ronal

@@ -66,7 +66,7 @@ try:
     logger.info("💾 Saving train/test to Unity Catalog (raw + processed)")
     data_processor.save_to_catalog(X_train, X_test)
     # Enable Change Data Feed for all tables
-    if hasattr(data_processor, 'enable_change_data_feed'):
+    if hasattr(data_processor, "enable_change_data_feed"):
         logger.info("🔁 Enabling Change Data Feed for tables")
         data_processor.enable_change_data_feed()
     else:

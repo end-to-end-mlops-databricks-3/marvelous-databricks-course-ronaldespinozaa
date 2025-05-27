@@ -22,22 +22,23 @@ including configuration loading, data loading, preprocessing duration, and data 
 
 import argparse
 import os
+
 import yaml
 from loguru import logger
+from marvelous.logging import setup_logging
+from marvelous.timer import Timer
 from pyspark.sql import SparkSession
 
 from bank_marketing.config import ProjectConfig
 from bank_marketing.data_processor import DataProcessor
-from marvelous.logging import setup_logging
-from marvelous.timer import Timer
 
 
 def main(env: str) -> None:
-    """
-    Main function to load, preprocess, split, and save the bank marketing dataset.
+    """Load, preprocess, split, and save the bank marketing dataset.
 
     Args:
         env (str): Environment name to load the appropriate configuration (e.g., 'dev', 'acc', 'prd').
+
     """
     # Robust path to the YAML configuration file
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -60,9 +61,9 @@ def main(env: str) -> None:
     data_path = f"/Volumes/{config.catalog_name}/{config.schema_name}/data/data.csv"
 
     # Dataset existence validation
-    if not spark._jvm.org.apache.hadoop.fs.FileSystem.get(
-        spark._jsc.hadoopConfiguration()
-    ).exists(spark._jvm.org.apache.hadoop.fs.Path(data_path)):
+    if not spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration()).exists(
+        spark._jvm.org.apache.hadoop.fs.Path(data_path)
+    ):
         logger.error(f"❌ File does not exist at: {data_path}")
         return
 
