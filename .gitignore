@@ -95,3 +95,16 @@ dmypy.json
 # VS code configuration
 .vscode
 .history
+
+notebooks/guide_notebooks.md
+notebooks/logs/
+notebooks/mlruns/
+.github/workflows/cd.yml
+notebooks/week2. experiment_tracking.py
+notebooks/week2. log_register_model.py
+.ruff_cache/
+typings/
+databricks.yml
+.pre-commit-config.yaml
+init_script.sh
+pyproject.toml
