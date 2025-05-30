@@ -162,7 +162,7 @@ else:
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 6. Summary & Next Steps
+# MAGIC ## 6. Summary
 
 # COMMAND ----------
 
