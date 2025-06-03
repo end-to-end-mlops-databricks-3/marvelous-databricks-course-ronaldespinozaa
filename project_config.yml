@@ -15,7 +15,7 @@ dev:
 
 experiment_name_basic: /Shared/bank-marketing-basic
 experiment_name_custom: /Shared/bank-marketing-custom
-experiment_name_fe: /Shared/house-prices-fe
+experiment_name_fe: /Shared/bank-marketing-fe
 
 parameters:
   learning_rate: 0.05
@@ -44,3 +44,25 @@ cat_features:
   - poutcome
 
 target: Target
+
+# Feature Engineering Configuration (optional - used by FeatureStoreAdapter)
+feature_tables:
+  client_demographics: "client_demographics"
+  campaign_history: "campaign_history"
+  external_features: "external_features"
+
+feature_functions:
+  account_risk_score: "calculate_account_risk_score"
+  campaign_effectiveness: "calculate_campaign_effectiveness"
+  client_profile_score: "calculate_client_profile_score"
+
+# External data sources (for advanced patterns - optional)
+external_sources:
+  credit_bureau: "mock_credit_bureau"
+  market_data: "mock_market_data"
+
+# Default values for notebook runs (can be overridden)
+default_tags:
+  git_sha: "notebook_run"
+  branch: "main"
+  job_run_id: "interactive_run"
