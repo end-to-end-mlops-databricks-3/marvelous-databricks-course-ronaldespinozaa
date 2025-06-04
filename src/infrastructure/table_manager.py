@@ -33,9 +33,24 @@ class TableManager:
     def ensure_schema_exists(self) -> None:
         """Create the catalog and schema if they don't exist."""
         try:
-            # Create catalog if it doesn't exist
-            self.spark.sql(f"CREATE CATALOG IF NOT EXISTS {self.catalog_name}")
-            logger.info(f"✅ Catalog {self.catalog_name} ensured")
+            # Check if catalog exists first
+            catalogs_df = self.spark.sql("SHOW CATALOGS")
+            existing_catalogs = [row["catalog"] for row in catalogs_df.collect()]
+
+            if self.catalog_name not in existing_catalogs:
+                # Create catalog with managed location
+                # Use DBFS location for storage
+                storage_location = f"dbfs:/databricks-datasets/mlops/{self.catalog_name}"
+
+                create_catalog_sql = f"""
+                CREATE CATALOG IF NOT EXISTS {self.catalog_name}
+                MANAGED LOCATION '{storage_location}'
+                """
+
+                self.spark.sql(create_catalog_sql)
+                logger.info(f"✅ Catalog {self.catalog_name} created with location {storage_location}")
+            else:
+                logger.info(f"✅ Catalog {self.catalog_name} already exists")
 
             # Create schema if it doesn't exist
             self.spark.sql(f"CREATE SCHEMA IF NOT EXISTS {self.full_schema}")
