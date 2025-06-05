@@ -87,6 +87,7 @@ lint.ignore = [
     "ERA001", # commented out code
     "D100", # missing docstring
     "ERA001", # commented out code
+    "ANN401"
     ]
 
 [tool.ruff.format]
