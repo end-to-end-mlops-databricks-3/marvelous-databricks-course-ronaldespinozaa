@@ -265,3 +265,58 @@ __pydantic_private__: null
 2025-05-24 11:19:12.379 | INFO     | __main__:<module>:7 - 🔁 Enabling Change Data Feed for tables
 2025-05-24 11:19:21.410 | INFO     | __main__:<module>:12 - ✅ Data available in both raw and processed formats
 2025-05-24 11:19:21.434 | INFO     | __main__:<module>:3 - 🔁 Enabling Change Data Feed for volumes
+2025-05-30 11:03:45.992 | INFO     | __main__:<module>:5 - ✅ Configuration loaded:
+2025-05-30 11:03:45.997 | INFO     | __main__:<module>:6 - !!python/object:bank_marketing.config.ProjectConfig
+__dict__:
+  cat_features:
+  - job
+  - marital
+  - education
+  - default
+  - housing
+  - loan
+  - contact
+  - month
+  - poutcome
+  catalog_name: mlops_dev
+  experiment_name_basic: /Shared/bank-marketing-basic
+  experiment_name_custom: /Shared/bank-marketing-custom
+  num_features:
+  - age
+  - balance
+  - day
+  - duration
+  - campaign
+  - pdays
+  - previous
+  parameters:
+    learning_rate: 0.05
+    max_depth: 4
+    n_estimators: 200
+    random_state: 42
+  schema_name: espinoza
+  target: Target
+  volume_name: bank_marketing_dev
+__pydantic_extra__: null
+__pydantic_fields_set__: !!set
+  cat_features: null
+  catalog_name: null
+  experiment_name_basic: null
+  experiment_name_custom: null
+  num_features: null
+  parameters: null
+  schema_name: null
+  target: null
+  volume_name: null
+__pydantic_private__: null
+
+2025-05-30 11:03:49.557 | INFO     | __main__:<module>:6 - 📥 Data loaded from: ../data/data.csv - Shape: (45211, 17)
+2025-05-30 11:03:53.576 | INFO     | __main__:<module>:5 - ⚙️ Preprocessing completed in: Elapsed time: 0.0715 seconds
+2025-05-30 11:04:00.155 | INFO     | __main__:<module>:3 - 📊 Train shape: (36168, 17) | Test shape: (9043, 17)
+2025-05-30 11:04:01.144 | INFO     | __main__:<module>:8 - 📦 Volume configured: /Volumes/mlops_dev/espinoza/bank_marketing_dev
+2025-05-30 11:04:09.506 | INFO     | __main__:<module>:2 - 💾 Saving data to volume (raw + processed)
+2025-05-30 11:04:52.646 | INFO     | __main__:<module>:5 - ⏱️ Data saved to volume in: Elapsed time: 43.1386 seconds
+2025-05-30 11:04:52.678 | INFO     | __main__:<module>:3 - 💾 Saving train/test to Unity Catalog (raw + processed)
+2025-05-30 11:05:29.530 | INFO     | __main__:<module>:7 - 🔁 Enabling Change Data Feed for tables
+2025-05-30 11:05:38.504 | INFO     | __main__:<module>:12 - ✅ Data available in both raw and processed formats
+2025-05-30 11:05:38.542 | INFO     | __main__:<module>:3 - 🔁 Enabling Change Data Feed for volumes

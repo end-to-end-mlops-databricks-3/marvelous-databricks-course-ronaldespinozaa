@@ -15,7 +15,7 @@ dev:
 
 experiment_name_basic: /Shared/bank-marketing-basic
 experiment_name_custom: /Shared/bank-marketing-custom
-experiment_name_fe: /Shared/house-prices-fe
+experiment_name_fe: /Shared/bank-marketing-fe
 
 parameters:
   learning_rate: 0.05

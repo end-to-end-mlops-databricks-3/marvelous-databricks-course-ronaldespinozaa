@@ -22,6 +22,7 @@ class ProjectConfig(BaseModel):
     volume_name: str
     experiment_name_basic: str | None
     experiment_name_custom: str | None
+    experiment_name_fe: str | None
 
     @classmethod
     def from_yaml(cls, config_path: str, env: str = "dev") -> "ProjectConfig":

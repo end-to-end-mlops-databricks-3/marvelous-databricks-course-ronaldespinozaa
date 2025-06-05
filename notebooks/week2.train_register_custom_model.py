@@ -197,7 +197,7 @@ for key, value in predictions.items():
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 8. Summary & Next Steps
+# MAGIC ## 8. Summary
 
 # COMMAND ----------
 
@@ -212,3 +212,5 @@ print(f"""
      - Model aliasing
 
 """)
+
+# COMMAND ----------
