@@ -86,8 +86,8 @@ lint.ignore = [
     "C901", # too complex
     "ERA001", # commented out code
     "D100", # missing docstring
-    "ERA001" # commented out code
-]
+    "ERA001", # commented out code
+    ]
 
 [tool.ruff.format]
 indent-style = "space"
