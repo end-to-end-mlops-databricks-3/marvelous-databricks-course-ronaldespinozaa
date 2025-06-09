@@ -19,4 +19,5 @@ pytest_plugins = [
     "tests.fixtures.datapreprocessor_fixture",
     "tests.fixtures.custom_model_fixture",
     "tests.fixtures.basic_model_fixture",
+    "tests.fixtures.real_data_fixture",  # Simple fixture
 ]

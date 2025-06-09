@@ -95,3 +95,6 @@ dmypy.json
 # VS code configuration
 .vscode
 .history
+
+notebooks/mlruns/
+notebooks/guide_notebooks.md
